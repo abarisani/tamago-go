@@ -7,6 +7,7 @@
 package runtime
 
 import (
+	"internal/abi"
 	"internal/runtime/atomic"
 	"unsafe"
 )
@@ -65,11 +66,19 @@ func initsig(preinit bool)           {}
 func osyield()                       {}
 func osyield_no_g()                  {}
 
+// Task can be set externally by the linked application to provide an
+// implementation for HW/OS threading (see runtime.newosproc).
+var Task func(stk, mp, g0, fn unsafe.Pointer)
+
 // May run with m.p==nil, so write barriers are not allowed.
 //
 //go:nowritebarrier
 func newosproc(mp *m) {
-	throw("newosproc: not implemented")
+	if Task != nil {
+		Task(unsafe.Pointer(mp.g0.stack.hi), unsafe.Pointer(mp), unsafe.Pointer(mp.g0), unsafe.Pointer(abi.FuncPCABI0(mstart)))
+	} else {
+		throw("newosproc: not implemented")
+	}
 }
 
 // Called to initialize a new m (including the bootstrap m).
@@ -167,12 +176,12 @@ func usleep_no_g(usec uint32) {
 	usleep(usec)
 }
 
-// Exit can be provided externally by the linked application to provide an
-// implementation for runtime.exit.
+// Exit can be set externally by the linked application to provide an
+// implementation for runtime termination (see runtime.exit).
 var Exit func(int32)
 
-// Idle can be provided externally by the linked application to provide an
-// implementation for CPU idle time management (see beforeIdle()).
+// Idle can be set externally by the linked application to provide an
+// implementation for CPU idle time management (see runtime.beforeIdle).
 var Idle func(until int64)
 
 func exit(code int32) {

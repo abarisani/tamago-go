@@ -2835,8 +2835,7 @@ func newm1(mp *m) {
 //
 // The calling thread must itself be in a known-good state.
 func startTemplateThread() {
-	if GOARCH == "wasm" || // no threads on wasm yet
-	   GOOS == "tamago" {
+	if GOARCH == "wasm" { // no threads on wasm yet
 		return
 	}
 
@@ -4353,8 +4352,7 @@ func gdestroy(gp *g) {
 
 	dropg()
 
-	if GOARCH == "wasm" || // no threads yet on wasm
-	   GOOS == "tamago" {
+	if GOARCH == "wasm" { // no threads yet on wasm
 		gfput(pp, gp)
 		return
 	}
@@ -5319,7 +5317,7 @@ func Breakpoint() {
 //go:nosplit
 func dolockOSThread() {
 	if GOARCH == "wasm" ||
-	   GOOS == "tamago" {
+	   GOOS == "tamago" { // no OS under tamago
 		return // no threads on wasm yet
 	}
 	gp := getg()
@@ -5371,8 +5369,7 @@ func lockOSThread() {
 //
 //go:nosplit
 func dounlockOSThread() {
-	if GOARCH == "wasm" ||
-	   GOOS == "tamago" {
+	if GOARCH == "wasm" {
 		return // no threads on wasm yet
 	}
 	gp := getg()
