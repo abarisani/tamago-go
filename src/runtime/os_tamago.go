@@ -67,7 +67,10 @@ func osyield()                       {}
 func osyield_no_g()                  {}
 
 // Task can be set externally by the linked application to provide an
-// implementation for HW/OS threading (see runtime.newosproc).
+// implementation for HW/OS threading.
+//
+// The call takes effect only when [runtime.NumCPU] is greater than 1 (see
+// [runtime.SetNumCPU]).
 var Task func(stk, mp, g0, fn unsafe.Pointer)
 
 // May run with m.p==nil, so write barriers are not allowed.
@@ -86,6 +89,11 @@ func newosproc(mp *m) {
 func mpreinit(mp *m) {
 	mp.gsignal = malg(32 * 1024)
 	mp.gsignal.m = mp
+}
+
+// SetNumCPU sets the number of logical CPUs usable by the current process.
+func SetNumCPU(n int) {
+	ncpu = int32(n)
 }
 
 func osinit() {

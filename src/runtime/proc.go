@@ -2835,7 +2835,8 @@ func newm1(mp *m) {
 //
 // The calling thread must itself be in a known-good state.
 func startTemplateThread() {
-	if GOARCH == "wasm" { // no threads on wasm yet
+	if GOARCH == "wasm" || // no threads on wasm yet
+	   GOOS == "tamago" { // no OS under tamago
 		return
 	}
 
