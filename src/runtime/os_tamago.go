@@ -12,6 +12,10 @@ import (
 	"unsafe"
 )
 
+type mOS struct{
+	waitsemacount uint32
+}
+
 // see testing.testBinary
 var testBinary string
 
@@ -48,7 +52,6 @@ func WakeG()
 func Wake(gp uint)
 
 // stubs for unused/unimplemented functionality
-type mOS struct{}
 type sigset struct{}
 type gsignalStack struct{}
 
@@ -71,7 +74,7 @@ func osyield_no_g()                  {}
 //
 // The call takes effect only when [runtime.NumCPU] is greater than 1 (see
 // [runtime.SetNumCPU]).
-var Task func(stk, mp, g0, fn unsafe.Pointer)
+var Task func(sp, mp, gp, fn unsafe.Pointer)
 
 // May run with m.p==nil, so write barriers are not allowed.
 //
@@ -209,11 +212,50 @@ func exitThread(wait *atomic.Uint32) {
 	throw("exitThread: not implemented")
 }
 
+//go:nosplit
+func semacreate(mp *m) {
+}
+
+//go:nosplit
+func semasleep(ns int64) int {
+	gp := getg()
+	if ns >= 0 {
+		ms := timediv(ns, 1000000, nil)
+		if ms == 0 {
+			ms = 1
+		}
+
+		// TODO: use nanotime()
+		for i := ms; i > 0; i -= 1 {
+			if atomic.Load(&gp.m.waitsemacount) <= 0 {
+				continue
+			}
+
+			atomic.Xadd(&gp.m.waitsemacount, -1)
+			return 0
+		}
+
+		return -1 // timeout or interrupted
+	}
+
+	//for !atomic.Cas(&gp.m.waitsemacount, 1, 0) {
+	//}
+
+	for atomic.Load(&gp.m.waitsemacount) <= 0 {
+		// interrupted; try again (c.f. lock_sema.go)
+	}
+	atomic.Xadd(&gp.m.waitsemacount, -1)
+	return 0 // success
+}
+
+//go:nosplit
+func semawakeup(mp *m) {
+	atomic.Xadd(&mp.waitsemacount, 1)
+}
+
 const preemptMSupported = false
 
-func preemptM(mp *m) {
-	// No threads, so nothing to do.
-}
+func preemptM(mp *m) {}
 
 // Stubs so tests can link correctly. These should never be called.
 func open(name *byte, mode, perm int32) int32        { panic("not implemented") }
