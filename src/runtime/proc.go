@@ -2772,7 +2772,7 @@ func newm(fn func(), pp *p, id int64) {
 	mp := allocm(pp, fn, id)
 	mp.nextp.set(pp)
 	mp.sigmask = initSigmask
-	if gp := getg(); gp != nil && gp.m != nil && (gp.m.lockedExt != 0 || gp.m.incgo) && GOOS != "plan9" {
+	if gp := getg(); gp != nil && gp.m != nil && (gp.m.lockedExt != 0 || gp.m.incgo) && (GOOS != "plan9" && GOOS != "tamago") {
 		// We're on a locked M or a thread that may have been
 		// started by C. The kernel state of this thread may
 		// be strange (the user may have locked it for that
