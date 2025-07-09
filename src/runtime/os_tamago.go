@@ -60,7 +60,6 @@ func sigsave(p *sigset)              {}
 func msigrestore(sigmask sigset)     {}
 func clearSignalHandlers()           {}
 func sigblock(exiting bool)          {}
-func minit()                         {}
 func unminit()                       {}
 func mdestroy(mp *m)                 {}
 func setProcessCPUProfiler(hz int32) {}
@@ -69,12 +68,14 @@ func initsig(preinit bool)           {}
 func osyield()                       {}
 func osyield_no_g()                  {}
 
-// Task can be set externally by the linked application to provide an
-// implementation for HW/OS threading.
+// Task can be set externally to provide an implementation for HW/OS threading.
 //
 // The call takes effect only when [runtime.NumCPU] is greater than 1 (see
 // [runtime.SetNumCPU]).
 var Task func(sp, mp, gp, fn unsafe.Pointer)
+
+// ProcID can be set externally to provide the process identifier.
+var ProcID func() uint64
 
 // May run with m.p==nil, so write barriers are not allowed.
 //
@@ -187,12 +188,12 @@ func usleep_no_g(usec uint32) {
 	usleep(usec)
 }
 
-// Exit can be set externally by the linked application to provide an
-// implementation for runtime termination (see runtime.exit).
+// Exit can be set externally to provide an implementation for runtime
+// termination (see runtime.exit).
 var Exit func(int32)
 
-// Idle can be set externally by the linked application to provide an
-// implementation for CPU idle time management (see runtime.beforeIdle).
+// Idle can be set externally to provide an implementation for CPU idle time
+// management (see runtime.beforeIdle).
 var Idle func(until int64)
 
 func exit(code int32) {
@@ -219,33 +220,35 @@ func semacreate(mp *m) {
 //go:nosplit
 func semasleep(ns int64) int {
 	gp := getg()
-	if ns >= 0 {
-		ms := timediv(ns, 1000000, nil)
-		if ms == 0 {
-			ms = 1
-		}
+	addr := &gp.m.waitsemacount
 
-		// TODO: use nanotime()
-		for i := ms; i > 0; i -= 1 {
-			if atomic.Load(&gp.m.waitsemacount) <= 0 {
+	v := uint32(0)
+
+	if ns >= 0 {
+		deadline := nanotime() + ns
+
+		for {
+			if deadline - nanotime() <=0 {
+				return -1 // timeout or interrupted
+			}
+			if v = atomic.Load(addr); v <= 0 {
 				continue
 			}
+			if atomic.Cas(addr, v, v-1) {
+				return 0
+			}
+		}
+	}
 
-			atomic.Xadd(&gp.m.waitsemacount, -1)
+	for {
+		if v = atomic.Load(addr); v <= 0 {
+			// interrupted; try again (c.f. lock_sema.go)
+			continue
+		}
+		if atomic.Cas(addr, v, v-1) {
 			return 0
 		}
-
-		return -1 // timeout or interrupted
 	}
-
-	//for !atomic.Cas(&gp.m.waitsemacount, 1, 0) {
-	//}
-
-	for atomic.Load(&gp.m.waitsemacount) <= 0 {
-		// interrupted; try again (c.f. lock_sema.go)
-	}
-	atomic.Xadd(&gp.m.waitsemacount, -1)
-	return 0 // success
 }
 
 //go:nosplit
@@ -256,6 +259,15 @@ func semawakeup(mp *m) {
 const preemptMSupported = false
 
 func preemptM(mp *m) {}
+
+func minit() {
+	if ProcID == nil {
+		return
+	}
+
+	gp := getg()
+	gp.m.procid = ProcID()
+}
 
 // Stubs so tests can link correctly. These should never be called.
 func open(name *byte, mode, perm int32) int32        { panic("not implemented") }
