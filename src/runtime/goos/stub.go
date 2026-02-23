@@ -32,6 +32,17 @@ package goos
 
 import "unsafe"
 
+// Required constants.
+const (
+	// LogHeapArenaBytes defines the size of a runtime heap arena in log_2
+	// bytes (see runtime.logHeapArenaBytes).
+	LogHeapArenaBytes = (2+20)
+
+	// LogPallocChunkPages defines the size of a runtime bitmap chunk in
+	// log_2 bytes (see runtime.logPallocChunkPages)
+	LogPallocChunkPages = 9
+)
+
 // Required variables.
 var (
 	// RamStart defines the start address of the physical or virtual memory
