@@ -30,13 +30,12 @@ const (
 )
 
 const (
-	// LogHeapArenaBytes defines the size of a runtime heap arena in log_2
-	// bytes (see runtime.logHeapArenaBytes).
-	LogHeapArenaBytes = (2+20)
-
-	// LogPallocChunkPages defines the size of a runtime bitmap chunk in
-	// log_2 bytes (see runtime.logPallocChunkPages)
+	ArenaBaseOffset     = 0
+	HeapAddrBits        = 32
+	LogHeapArenaBytes   = (2 + 20)
 	LogPallocChunkPages = 9
+	MinPhysPageSize     = 4096
+	StackSystem         = 0
 )
 
 var (
