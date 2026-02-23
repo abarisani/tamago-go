@@ -29,6 +29,16 @@ const (
 		_CLONE_THREAD /* revisit - okay for now */
 )
 
+const (
+	// LogHeapArenaBytes defines the size of a runtime heap arena in log_2
+	// bytes (see runtime.logHeapArenaBytes).
+	LogHeapArenaBytes = (2+20)
+
+	// LogPallocChunkPages defines the size of a runtime bitmap chunk in
+	// log_2 bytes (see runtime.logPallocChunkPages)
+	LogPallocChunkPages = 9
+)
+
 var (
 	RamStart       uint = 0x80000000
 	RamSize        uint = 0x20000000 // 512MB
