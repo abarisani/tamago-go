@@ -48,17 +48,7 @@ TEXT runtime·rt0_riscv64_tamago(SB),NOSPLIT|NOFRAME,$0
 	WORD $0 // crash if reached
 	RET
 
-// func GetG() (gp uint, pp uint)
-TEXT runtime·GetG(SB),NOSPLIT,$0-16
-	MOV	g, gp+0(FP)
-
-	MOV	(g_m)(g), T0
-	MOV	(m_p)(T0), T0
-	MOV	T0, pp+8(FP)
-
-	RET
-
-// WakeG modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
+// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
 // soon as possible.
 //
 // The function arguments must be passed through the following registers
@@ -70,7 +60,7 @@ TEXT runtime·GetG(SB),NOSPLIT,$0-16
 // (rather than on the frame pointer):
 //
 //   * T0: success (0), failure (1)
-TEXT runtime·WakeG(SB),NOSPLIT|NOFRAME,$0-0
+TEXT runtime·wakeg(SB),NOSPLIT|NOFRAME,$0-0
 	BEQ	T0, ZERO, fail
 
 	MOV	(g_timer)(T0), T3
@@ -125,12 +115,4 @@ check:
 	RET
 fail:
 	MOV	$1, T0
-	RET
-
-// func Wake(gp uint) bool
-TEXT runtime·Wake(SB),$0-9
-	MOV	gp+0(FP), T0
-	CALL	runtime·WakeG(SB)
-	XOR	$1, T0
-	MOV	T0, ret+8(FP)
 	RET
