@@ -11,7 +11,10 @@ import (
 	"time"
 )
 
-var loopG uintptr
+var (
+	loopG uintptr
+	sig   syscall.Signal
+)
 
 // Defined by the runtime package.
 func getgp() uintptr
@@ -21,7 +24,7 @@ func loop() {
 
 	for {
 		time.Sleep(math.MaxInt64)
-		process(syscall.SIGINT)
+		process(sig)
 	}
 }
 
@@ -29,7 +32,7 @@ func init() {
 	watchSignalLoop = loop
 }
 
-const numSig = 8
+const numSig = 256
 
 func signum(sig os.Signal) int {
 	switch sig := sig.(type) {
@@ -52,8 +55,13 @@ func signalIgnored(sig int) bool {
 	return false
 }
 
-// Interrupt causes an [os.Interrupt] to be sent on the channel
-func Interrupt()
+// Relay relays a signal to the [Notify] channel.
+//
+//go:nosplit
+func Relay(sig syscall.Signal)
 
-// Waiting returns whether package signal is blocked on [Notify].
+// Waiting returns whether package signal is blocked waiting an incoming signal
+// to [Notify].
+//
+//go:nosplit
 func Waiting() bool

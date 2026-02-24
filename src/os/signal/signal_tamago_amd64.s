@@ -4,8 +4,10 @@
 
 #include "textflag.h"
 
-// func Interrupt()
-TEXT ·Interrupt(SB),NOSPLIT|NOFRAME,$0
+// func Relay(sig syscall.Signal)
+TEXT ·Relay(SB),NOSPLIT|NOFRAME,$0-8
+	MOVQ	sig+0(FP), AX
+	MOVQ	AX, ·sig(SB)
 	MOVQ	·loopG(SB), AX
 	JMP	runtime·wakeg(SB)
 	RET
