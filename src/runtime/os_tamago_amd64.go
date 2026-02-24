@@ -38,7 +38,3 @@ func DataRegion() (start uint64, end uint64) {
 func CPU() string {
 	return cpu.Name()
 }
-
-// Asleep returns whether the goroutine holds a cached timer for time.Sleep
-// (g.timer) and is therefore suitable as [Wake] or [WakeG] target.
-func Asleep(gp uint) bool

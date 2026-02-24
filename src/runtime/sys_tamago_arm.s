@@ -128,17 +128,7 @@ noswitch:
 	MOVW	R0, argframe+0(FP)
 	B	(R1)
 
-// func GetG() (gp uint, pp uint)
-TEXT runtime·GetG(SB),NOSPLIT,$0-8
-	MOVW	g, gp+0(FP)
-
-	MOVW	(g_m)(g), R0
-	MOVW	(m_p)(R0), R0
-	MOVW	R0, pp+4(FP)
-
-	RET
-
-// WakeG modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
+// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
 // soon as possible.
 //
 // The function arguments must be passed through the following registers
@@ -150,7 +140,7 @@ TEXT runtime·GetG(SB),NOSPLIT,$0-8
 // (rather than on the frame pointer):
 //
 //   * R0: success (0), failure (1)
-TEXT runtime·WakeG(SB),NOSPLIT|NOFRAME,$0-0
+TEXT runtime·wakeg(SB),NOSPLIT|NOFRAME,$0-0
 	CMP	$0, R0
 	B.EQ	fail
 
@@ -218,14 +208,6 @@ check:
 	RET
 fail:
 	MOVW	$1, R0
-	RET
-
-// func Wake(gp uint) bool
-TEXT runtime·Wake(SB),$0-5
-	MOVW	gp+0(FP), R0
-	CALL	runtime·WakeG(SB)
-	EOR	$1, R0
-	MOVB	R0, ret+4(FP)
 	RET
 
 // never called (cgo not supported)

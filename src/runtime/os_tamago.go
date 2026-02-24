@@ -35,20 +35,18 @@ func GetRandomData(r []byte) {
 	goos.GetRandomData(r)
 }
 
-// GetG returns the pointer to the current G and its P.
-func GetG() (gp uint, pp uint)
-
-// WakeG modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
+// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
 // soon as possible.
 //
 // The function is meant to be invoked within Go assembly and its arguments
 // must be passed through registers rather than on the frame pointer, see
 // definition in sys_tamago_$GOARCH.s for details.
-func WakeG()
+func wakeg()
 
-// Wake modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
-// soon as possible, reporting whether the modification is successful.
-func Wake(gp uint) bool
+//go:linkname getgp os/signal.getgp
+func getgp() (gp uintptr) {
+	return uintptr(unsafe.Pointer(getg()))
+}
 
 // stubs for unused/unimplemented functionality
 type sigset struct{}
