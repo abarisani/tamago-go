@@ -47,8 +47,8 @@ TEXT runtime·rt0_arm64_tamago(SB),NOSPLIT|NOFRAME,$0
 	BL	runtime·mstart(SB)
 	UNDEF
 
-// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
-// soon as possible.
+// findTimer returns whether a cached timer for time.Sleep (g.timer) exists for
+// the argument goroutine.
 //
 // The function arguments must be passed through the following registers
 // (rather than on the frame pointer):
@@ -58,8 +58,8 @@ TEXT runtime·rt0_arm64_tamago(SB),NOSPLIT|NOFRAME,$0
 // The function return values are passed through the following registers:
 // (rather than on the frame pointer):
 //
-//   * R0: success (0), failure (1)
-TEXT runtime·wakeg(SB),NOSPLIT|NOFRAME,$0-0
+//   * R1: success (0), failure (1)
+TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	CMP	$0, R0
 	BEQ	fail
 
@@ -97,6 +97,30 @@ check:
 	MOVD	(timerWhen_timer)(R0), R1
 	CMP	R3, R1
 	BNE	prev
+
+	MOVD	$0, R1
+	RET
+fail:
+	MOVD	$1, R1
+	RET
+
+// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
+// soon as possible.
+//
+// The function arguments must be passed through the following registers
+// (rather than on the frame pointer):
+//
+//   * R0: G pointer
+//
+// The function return values are passed through the following registers:
+// (rather than on the frame pointer):
+//
+//   * R0: success (0), failure (1)
+TEXT runtime·wakeg(SB),NOSPLIT,$0-0
+	CALL	runtime·findTimer(SB)
+
+	CMP	$0, R1
+	BNE	fail
 
 	// g->timer.ts.heap[off] = 1
 	MOVD	$1, R1
