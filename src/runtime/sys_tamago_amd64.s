@@ -168,6 +168,18 @@ application:
 	MOVL	$0xf1, 0xf1  // crash
 	RET
 
+// findTimer returns whether a cached timer for time.Sleep (g.timer) exists for
+// the argument goroutine.
+//
+// The function arguments must be passed through the following registers
+// (rather than on the frame pointer):
+//
+//   * AX: G pointer
+//
+// The function return values are passed through the following registers:
+// (rather than on the frame pointer):
+//
+//   * BX: success (0), failure (1)
 TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	CMPQ	AX, $0
 	JE	fail

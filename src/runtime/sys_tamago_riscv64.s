@@ -48,8 +48,8 @@ TEXT runtime·rt0_riscv64_tamago(SB),NOSPLIT|NOFRAME,$0
 	WORD $0 // crash if reached
 	RET
 
-// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
-// soon as possible.
+// findTimer returns whether a cached timer for time.Sleep (g.timer) exists for
+// the argument goroutine.
 //
 // The function arguments must be passed through the following registers
 // (rather than on the frame pointer):
@@ -59,8 +59,8 @@ TEXT runtime·rt0_riscv64_tamago(SB),NOSPLIT|NOFRAME,$0
 // The function return values are passed through the following registers:
 // (rather than on the frame pointer):
 //
-//   * T0: success (0), failure (1)
-TEXT runtime·wakeg(SB),NOSPLIT|NOFRAME,$0-0
+//   * T1: success (0), failure (1)
+TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	BEQ	T0, ZERO, fail
 
 	MOV	(g_timer)(T0), T3
@@ -91,6 +91,29 @@ check:
 	// find heap entry matching g.timer
 	MOV	(timerWhen_timer)(T0), T1
 	BNE	T3, T1, prev
+
+	MOV	$0, T1
+	RET
+fail:
+	MOV	$1, T1
+	RET
+
+// wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
+// soon as possible.
+//
+// The function arguments must be passed through the following registers
+// (rather than on the frame pointer):
+//
+//   * T0: G pointer
+//
+// The function return values are passed through the following registers:
+// (rather than on the frame pointer):
+//
+//   * T0: success (0), failure (1)
+TEXT runtime·wakeg(SB),NOSPLIT,$0-0
+	CALL	runtime·findTimer(SB)
+
+	BNE	T1, ZERO, fail
 
 	// g->timer.ts.heap[off] = 1
 	MOV	$1, T1
