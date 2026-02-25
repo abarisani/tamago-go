@@ -11,3 +11,11 @@ TEXT ·Relay(SB),NOSPLIT|NOFRAME,$0-8
 	MOVD	·loopG(SB), R0
 	B	runtime·wakeg(SB)
 	RET
+
+// func Waiting() bool
+TEXT ·Waiting(SB),NOSPLIT|NOFRAME,$0-1
+	MOVD	·loopG(SB), R0
+	CALL	runtime·findTimer(SB)
+	EOR	$1, R1
+	MOVB	R1, ret+0(FP)
+	RET
