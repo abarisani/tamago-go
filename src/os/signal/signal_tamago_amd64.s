@@ -13,7 +13,7 @@ TEXT ·Relay(SB),NOSPLIT|NOFRAME,$0-8
 	RET
 
 // func Waiting() bool
-TEXT ·Waiting(SB),NOSPLIT|NOFRAME,$0-1
+TEXT ·Waiting(SB),NOSPLIT,$0-1
 	MOVQ	·loopG(SB), AX
 	CALL	runtime·findTimer(SB)
 	XORQ	$1, BX
