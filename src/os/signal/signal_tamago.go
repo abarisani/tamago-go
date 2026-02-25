@@ -5,10 +5,10 @@
 package signal
 
 import (
-	"math"
 	"os"
 	"syscall"
 	"time"
+	_ "unsafe"
 )
 
 var (
@@ -23,7 +23,9 @@ func loop() {
 	loopG = getgp()
 
 	for {
-		time.Sleep(math.MaxInt64)
+		// Sleep indefinitely until woken up by [Relay] through
+		// runtime.wakeg.
+		time.Sleep(1<<63 - 1) // math.MaxInt64
 		process(sig)
 	}
 }
@@ -55,7 +57,17 @@ func signalIgnored(sig int) bool {
 	return false
 }
 
-// Relay relays a signal to the [Notify] channel.
+//go:linkname waitUntilIdle os/signal.signalWaitUntilIdle
+func waitUntilIdle() {
+	for !Waiting() {
+	}
+}
+
+// Relay sends a signal to the [Notify] channel.
+//
+// To make it suitable for invocation in bare metal interrupt/exception
+// handlers, the function is implemented in assembly avoiding allocation and
+// runtime use.
 //
 //go:nosplit
 func Relay(sig syscall.Signal)
