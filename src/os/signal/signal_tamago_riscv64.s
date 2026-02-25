@@ -11,3 +11,11 @@ TEXT ·Relay(SB),NOSPLIT|NOFRAME,$0-8
 	MOV	·loopG(SB), T0
 	JMP	runtime·wakeg(SB)
 	RET
+
+// func Waiting() bool
+TEXT ·Waiting(SB),NOSPLIT|NOFRAME,$0-1
+	MOV	·loopG(SB), T0
+	CALL	runtime·findTimer(SB)
+	XOR	$1, T1
+	MOV	T1, ret+0(FP)
+	RET
