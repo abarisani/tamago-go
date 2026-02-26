@@ -27,6 +27,7 @@ func loop() {
 		// runtime.wakeg.
 		time.Sleep(1<<63 - 1) // math.MaxInt64
 		process(sig)
+		sig = -1
 	}
 }
 
