@@ -10,7 +10,6 @@ TEXT ·Relay(SB),NOSPLIT|NOFRAME,$0-0
 	MOVW	R0, ·sig(SB)
 	MOVW	·loopG(SB), R0
 	B	runtime·wakeg(SB)
-	RET
 
 // func Waiting() bool
 TEXT ·Waiting(SB),NOSPLIT,$0-1
