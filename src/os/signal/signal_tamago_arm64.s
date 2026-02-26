@@ -5,12 +5,11 @@
 #include "textflag.h"
 
 // func Relay(sig syscall.Signal)
-TEXT ·Relay(SB),NOSPLIT|NOFRAME,$0-8
+TEXT ·Relay(SB),NOSPLIT,$0-8
 	MOVD	sig+0(FP), R0
 	MOVD	R0, ·sig(SB)
 	MOVD	·loopG(SB), R0
 	B	runtime·wakeg(SB)
-	RET
 
 // func Waiting() bool
 TEXT ·Waiting(SB),NOSPLIT,$0-1
