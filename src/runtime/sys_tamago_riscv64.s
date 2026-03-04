@@ -29,7 +29,7 @@ TEXT runtime·rt0_riscv64_tamago(SB),NOSPLIT|NOFRAME,$0
 	MOV	T0, g_m(g)
 
 	CALL	runtime·hwinit0(SB)
-	CALL	runtime·check(SB)
+	//CALL	runtime·check(SB)
 	CALL	runtime·osinit(SB)
 	CALL	runtime·schedinit(SB)
 	CALL	runtime·hwinit1(SB)
