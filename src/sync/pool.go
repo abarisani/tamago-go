@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"sync/atomic"
 	"unsafe"
+	iatomic "internal/runtime/atomic"
 )
 
 // A Pool is a set of temporary objects that may be individually saved and
@@ -311,8 +312,12 @@ func runtime_procUnpin()
 // compiler also knows to intrinsify the symbol we linkname into this
 // package.
 
-//go:linkname runtime_LoadAcquintptr internal/runtime/atomic.LoadAcquintptr
-func runtime_LoadAcquintptr(ptr *uintptr) uintptr
+//FIXME go:linkname runtime_LoadAcquintptr internal/runtime/atomic.LoadAcquintptr
+func runtime_LoadAcquintptr(ptr *uintptr) uintptr {
+	return iatomic.Loaduintptr(ptr)
+}
 
-//go:linkname runtime_StoreReluintptr internal/runtime/atomic.StoreReluintptr
-func runtime_StoreReluintptr(ptr *uintptr, val uintptr)
+//FIXME go:linkname runtime_StoreReluintptr internal/runtime/atomic.StoreReluintptr
+func runtime_StoreReluintptr(ptr *uintptr, val uintptr) {
+	iatomic.Storeuintptr(ptr, val)
+}
