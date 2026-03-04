@@ -205,10 +205,6 @@ func EnableFIPS() bool {
 		return false
 	}
 
-	//if buildcfg.GOOS == "tamago" && buildcfg.GOSOFT == "1" {
-	//	return false
-	//}
-
 	return enableFIPS
 }
 
