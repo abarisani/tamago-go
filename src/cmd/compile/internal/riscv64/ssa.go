@@ -15,6 +15,7 @@ import (
 	"cmd/internal/obj"
 	"cmd/internal/obj/riscv"
 	"internal/abi"
+	"internal/buildcfg"
 )
 
 // ssaRegToReg maps ssa register numbers to obj register numbers.
@@ -619,6 +620,12 @@ func ssaGenValue(s *ssagen.State, v *ssa.Value) {
 		as := riscv.ALRW
 		if v.Op == ssa.OpRISCV64LoweredAtomicLoad64 {
 			as = riscv.ALRD
+		}
+		if buildcfg.GOSOFT == "1" {
+			as = riscv.ALW
+			if v.Op == ssa.OpRISCV64LoweredAtomicLoad64 {
+				as = riscv.ALD
+			}
 		}
 		p := s.Prog(as)
 		p.From.Type = obj.TYPE_MEM
