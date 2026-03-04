@@ -28,6 +28,7 @@
 // aq is sufficient to guarantee this, so that's what we use here. (This jibes
 // with ARM, which uses dmb ishst.)
 
+#include "go_asm.h"
 #include "textflag.h"
 
 // func Cas(ptr *uint64, old, new uint64) bool
@@ -43,9 +44,18 @@ TEXT ·Cas(SB), NOSPLIT, $0-17
 	MOVW	old+8(FP), A1
 	MOVW	new+12(FP), A2
 cas_again:
+#ifdef GOSOFT
+	LW	(A0), A3
+#else
 	LRW	(A0), A3
+#endif
 	BNE	A3, A1, cas_fail
+#ifdef GOSOFT
+	SW	A2, (A0)
+	MOV	$0, A4
+#else
 	SCW	A2, (A0), A4
+#endif
 	BNE	A4, ZERO, cas_again
 	MOV	$1, A0
 	MOVB	A0, ret+16(FP)
@@ -61,9 +71,18 @@ TEXT ·Cas64(SB), NOSPLIT, $0-25
 	MOV	old+8(FP), A1
 	MOV	new+16(FP), A2
 cas_again:
+#ifdef GOSOFT
+	LD	(A0), A3
+#else
 	LRD	(A0), A3
+#endif
 	BNE	A3, A1, cas_fail
+#ifdef GOSOFT
+	SD	A2, (A0)
+	MOV	$0, A4
+#else
 	SCD	A2, (A0), A4
+#endif
 	BNE	A4, ZERO, cas_again
 	MOV	$1, A0
 	MOVB	A0, ret+24(FP)
@@ -75,7 +94,13 @@ cas_fail:
 // func Load(ptr *uint32) uint32
 TEXT ·Load(SB),NOSPLIT|NOFRAME,$0-12
 	MOV	ptr+0(FP), A0
+#ifdef GOSOFT
+	FENCE
+	LW	(A0), A0
+	FENCE
+#else
 	LRW	(A0), A0
+#endif
 	MOVW	A0, ret+8(FP)
 	RET
 
@@ -91,7 +116,13 @@ TEXT ·Load8(SB),NOSPLIT|NOFRAME,$0-9
 // func Load64(ptr *uint64) uint64
 TEXT ·Load64(SB),NOSPLIT|NOFRAME,$0-16
 	MOV	ptr+0(FP), A0
+#ifdef GOSOFT
+	FENCE
+	LD	(A0), A0
+	FENCE
+#else
 	LRD	(A0), A0
+#endif
 	MOV	A0, ret+8(FP)
 	RET
 
@@ -99,7 +130,13 @@ TEXT ·Load64(SB),NOSPLIT|NOFRAME,$0-16
 TEXT ·Store(SB), NOSPLIT, $0-12
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
+#ifdef GOSOFT
+	FENCE
+	SW	A1, (A0)
+	FENCE
+#else
 	AMOSWAPW A1, (A0), ZERO
+#endif
 	RET
 
 // func Store8(ptr *uint8, val uint8)
@@ -115,7 +152,13 @@ TEXT ·Store8(SB), NOSPLIT, $0-9
 TEXT ·Store64(SB), NOSPLIT, $0-16
 	MOV	ptr+0(FP), A0
 	MOV	val+8(FP), A1
+#ifdef GOSOFT
+	FENCE
+	SD	A1, (A0)
+	FENCE
+#else
 	AMOSWAPD A1, (A0), ZERO
+#endif
 	RET
 
 TEXT ·Casp1(SB), NOSPLIT, $0-25
@@ -160,9 +203,16 @@ TEXT ·Xaddint32(SB),NOSPLIT,$0-20
 TEXT ·Xaddint64(SB),NOSPLIT,$0-24
 	MOV	ptr+0(FP), A0
 	MOV	delta+8(FP), A1
+#ifdef GOSOFT
+	MOV	(A0), A2
+	ADD	A1, A2, T0
+	MOV	T0, (A0)
+	MOV	T0, A0
+#else
 	AMOADDD A1, (A0), A0
 	ADD	A0, A1, A0
-	MOVW	A0, ret+16(FP)
+#endif
+	MOV	A0, ret+16(FP)
 	RET
 
 TEXT ·LoadAcq(SB),NOSPLIT|NOFRAME,$0-12
@@ -195,7 +245,13 @@ TEXT ·StoreReluintptr(SB), NOSPLIT, $0-16
 TEXT ·Xchg(SB), NOSPLIT, $0-20
 	MOV	ptr+0(FP), A0
 	MOVW	new+8(FP), A1
+#ifdef GOSOFT
+	MOVW	(A0), T2
+	MOVW	A1, (A0)
+	MOV	T2, A1
+#else
 	AMOSWAPW A1, (A0), A1
+#endif
 	MOVW	A1, ret+16(FP)
 	RET
 
@@ -211,10 +267,19 @@ TEXT ·Xchg8(SB), NOSPLIT, $0-17
 	AND	$~3, A0
 	SLL	A2, A1
 xchg8_again:
+#ifdef GOSOFT
+	LW	(A0), A5
+#else
 	LRW	(A0), A5
+#endif
 	AND	A4, A5, A3
 	OR	A1, A3
+#ifdef GOSOFT
+	SW	A3, (A0)
+	MOV	$0, A6
+#else
 	SCW	A3, (A0), A6
+#endif
 	BNEZ	A6, xchg8_again
 	SRL	A2, A5
 	MOVB	A5, ret+16(FP)
@@ -224,7 +289,13 @@ xchg8_again:
 TEXT ·Xchg64(SB), NOSPLIT, $0-24
 	MOV	ptr+0(FP), A0
 	MOV	new+8(FP), A1
+#ifdef GOSOFT
+	MOV	(A0), T2
+	MOV	A1, (A0)
+	MOV	T2, A1
+#else
 	AMOSWAPD A1, (A0), A1
+#endif
 	MOV	A1, ret+16(FP)
 	RET
 
@@ -236,8 +307,15 @@ TEXT ·Xchg64(SB), NOSPLIT, $0-24
 TEXT ·Xadd(SB), NOSPLIT, $0-20
 	MOV	ptr+0(FP), A0
 	MOVW	delta+8(FP), A1
-	AMOADDW A1, (A0), A2
-	ADD	A2,A1,A0
+#ifdef GOSOFT
+	MOVW	(A0), A2
+	ADDW	A1, A2, T0
+	MOVW	T0, (A0)
+	MOVW	T0, A0
+#else
+	AMOADDW	A1, (A0), A2
+	ADD	A2, A1, A0
+#endif
 	MOVW	A0, ret+16(FP)
 	RET
 
@@ -245,8 +323,15 @@ TEXT ·Xadd(SB), NOSPLIT, $0-20
 TEXT ·Xadd64(SB), NOSPLIT, $0-24
 	MOV	ptr+0(FP), A0
 	MOV	delta+8(FP), A1
+#ifdef GOSOFT
+	MOV	(A0), A2
+	ADD	A1, A2, T0
+	MOV	T0, (A0)
+	MOV	T0, A0
+#else
 	AMOADDD A1, (A0), A2
 	ADD	A2, A1, A0
+#endif
 	MOV	A0, ret+16(FP)
 	RET
 
@@ -276,7 +361,13 @@ TEXT ·And8(SB), NOSPLIT, $0-9
 	XOR	$255, A1
 	SLL	A2, A1
 	XOR	$-1, A1
+#ifdef GOSOFT
+	LW	(A0), T2
+	AND	A1, T2, T2
+	SW	T2, (A0)
+#else
 	AMOANDW A1, (A0), ZERO
+#endif
 	RET
 
 // func Or8(ptr *uint8, val uint8)
@@ -287,28 +378,52 @@ TEXT ·Or8(SB), NOSPLIT, $0-9
 	AND	$-4, A0
 	SLL	$3, A2
 	SLL	A2, A1
+#ifdef GOSOFT
+	MOVW	(A0), T2
+	OR	A1, T2, T2
+	MOVW	T2, (A0)
+#else
 	AMOORW	A1, (A0), ZERO
+#endif
 	RET
 
 // func And(ptr *uint32, val uint32)
 TEXT ·And(SB), NOSPLIT, $0-12
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
+#ifdef GOSOFT
+	MOVW	(A0), T2
+	AND	A1, T2, T2
+	MOVW	T2, (A0)
+#else
 	AMOANDW	A1, (A0), ZERO
+#endif
 	RET
 
 // func Or(ptr *uint32, val uint32)
 TEXT ·Or(SB), NOSPLIT, $0-12
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
+#ifdef GOSOFT
+	MOVW	(A0), T2
+	OR	A1, T2, T2
+	MOVW	T2, (A0)
+#else
 	AMOORW	A1, (A0), ZERO
+#endif
 	RET
 
 // func Or32(ptr *uint32, val uint32) uint32
 TEXT ·Or32(SB), NOSPLIT, $0-20
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
+#ifdef GOSOFT
+	MOVW	(A0), T2
+	OR	A1, A2, T2
+	MOVW	T2, (A0)
+#else
 	AMOORW	A1, (A0), A2
+#endif
 	MOVW	A2, ret+16(FP)
 	RET
 
@@ -316,7 +431,13 @@ TEXT ·Or32(SB), NOSPLIT, $0-20
 TEXT ·And32(SB), NOSPLIT, $0-20
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
+#ifdef GOSOFT
+	MOVW	(A0), T2
+	AND	A1, A2, T2
+	MOVW	T2, (A0)
+#else
 	AMOANDW	A1, (A0), A2
+#endif
 	MOVW	A2, ret+16(FP)
 	RET
 
@@ -324,7 +445,13 @@ TEXT ·And32(SB), NOSPLIT, $0-20
 TEXT ·Or64(SB), NOSPLIT, $0-24
 	MOV	ptr+0(FP), A0
 	MOV	val+8(FP), A1
+#ifdef GOSOFT
+	LD	(A0), A2
+	OR	A1, A2, T2
+	SD	T2, (A0)
+#else
 	AMOORD	A1, (A0), A2
+#endif
 	MOV	A2, ret+16(FP)
 	RET
 
@@ -332,7 +459,13 @@ TEXT ·Or64(SB), NOSPLIT, $0-24
 TEXT ·And64(SB), NOSPLIT, $0-24
 	MOV	ptr+0(FP), A0
 	MOV	val+8(FP), A1
+#ifdef GOSOFT
+	LD	(A0), A2
+	AND	A1, A2, T2
+	SD	T2, (A0)
+#else
 	AMOANDD	A1, (A0), A2
+#endif
 	MOV	A2, ret+16(FP)
 	RET
 
