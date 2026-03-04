@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"internal/goexperiment"
 	"log"
 	"os"
 	"strings"
@@ -913,11 +914,13 @@ func genRISCV64(g *gen) {
 		l.add("MOV", reg, 8)
 	}
 
-	// Add floating point registers (F0-F31).
-	for i := 0; i <= 31; i++ {
-		reg := fmt.Sprintf("F%d", i)
-		l.add("MOVD", reg, 8)
-	}
+	//if !goexperiment.TinyRiscv {
+		// Add floating point registers (F0-F31).
+		for i := 0; i <= 31; i++ {
+			reg := fmt.Sprintf("F%d", i)
+			l.add("MOVD", reg, 8)
+		}
+	//}
 
 	p("MOV X1, -%d(X2)", l.stack)
 	p("SUB $%d, X2", l.stack)
