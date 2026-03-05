@@ -975,8 +975,7 @@ The defined architecture feature build tags are:
 	  feature build tags.
 	- For GOARCH=riscv64,
 	  GORISCV64=rva20u64, rva22u64 and rva23u64 correspond to the riscv64.rva20u64,
-	  riscv64.rva22u64 and riscv64.rva23u64 build tags,
-	  GOSOFT=1 removes 'ad' extensions requirement (rv64cfimsu).
+	  riscv64.rva22u64 and riscv64.rva23u64 build tags.
 	- For GOARCH=wasm, GOWASM=satconv and signext
 	  correspond to the wasm.satconv and wasm.signext feature build tags.
 
