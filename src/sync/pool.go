@@ -6,10 +6,10 @@ package sync
 
 import (
 	"internal/race"
+	iatomic "internal/runtime/atomic"
 	"runtime"
 	"sync/atomic"
 	"unsafe"
-	iatomic "internal/runtime/atomic"
 )
 
 // A Pool is a set of temporary objects that may be individually saved and
@@ -82,6 +82,9 @@ type poolLocal struct {
 //
 //go:linkname runtime_randn runtime.randn
 func runtime_randn(n uint32) uint32
+
+// set at compile time when GOOS=1
+var soft string
 
 var poolRaceHash [128]uint64
 
@@ -159,8 +162,13 @@ func (p *Pool) Get() any {
 }
 
 func (p *Pool) getSlow(pid int) any {
+	var size uintptr
 	// See the comment in pin regarding ordering of the loads.
-	size := runtime_LoadAcquintptr(&p.localSize) // load-acquire
+	if len(soft) > 0 {
+		size = iatomic.Loaduintptr(&p.localSize)
+	} else {
+		size = runtime_LoadAcquintptr(&p.localSize) // load-acquire
+	}
 	locals := p.local                            // load-consume
 	// Try to steal one element from other procs.
 	for i := 0; i < int(size); i++ {
@@ -213,7 +221,12 @@ func (p *Pool) pin() (*poolLocal, int) {
 	// Since we've disabled preemption, GC cannot happen in between.
 	// Thus here we must observe local at least as large localSize.
 	// We can observe a newer/larger local, it is fine (we must observe its zero-initialized-ness).
-	s := runtime_LoadAcquintptr(&p.localSize) // load-acquire
+	var s uintptr
+	if len(soft) > 0 {
+		s = iatomic.Loaduintptr(&p.localSize)
+	} else {
+		s = runtime_LoadAcquintptr(&p.localSize) // load-acquire
+	}
 	l := p.local                              // load-consume
 	if uintptr(pid) < s {
 		return indexLocal(l, pid), pid
@@ -241,7 +254,12 @@ func (p *Pool) pinSlow() (*poolLocal, int) {
 	size := runtime.GOMAXPROCS(0)
 	local := make([]poolLocal, size)
 	atomic.StorePointer(&p.local, unsafe.Pointer(&local[0])) // store-release
-	runtime_StoreReluintptr(&p.localSize, uintptr(size))     // store-release
+
+	if len(soft) > 0 {
+		iatomic.Storeuintptr(&p.localSize, uintptr(size))
+	} else {
+		runtime_StoreReluintptr(&p.localSize, uintptr(size))     // store-release
+	}
 	return &local[pid], pid
 }
 
@@ -312,12 +330,8 @@ func runtime_procUnpin()
 // compiler also knows to intrinsify the symbol we linkname into this
 // package.
 
-//FIXME go:linkname runtime_LoadAcquintptr internal/runtime/atomic.LoadAcquintptr
-func runtime_LoadAcquintptr(ptr *uintptr) uintptr {
-	return iatomic.Loaduintptr(ptr)
-}
+//go:linkname runtime_LoadAcquintptr internal/runtime/atomic.LoadAcquintptr
+func runtime_LoadAcquintptr(ptr *uintptr) uintptr
 
-//FIXME go:linkname runtime_StoreReluintptr internal/runtime/atomic.StoreReluintptr
-func runtime_StoreReluintptr(ptr *uintptr, val uintptr) {
-	iatomic.Storeuintptr(ptr, val)
-}
+//go:linkname runtime_StoreReluintptr internal/runtime/atomic.StoreReluintptr
+func runtime_StoreReluintptr(ptr *uintptr, val uintptr)

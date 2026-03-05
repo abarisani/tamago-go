@@ -610,6 +610,9 @@ func (gcToolchain) ld(b *Builder, root *Action, targetPath, importcfg, mainpkg s
 	if fips140.Enabled() {
 		ldflags = append(ldflags, "-fipso", filepath.Join(root.Objdir, "fips.o"))
 	}
+	if buildcfg.GOSOFT == "1" {
+		ldflags = append(ldflags, "-X", "sync.soft=1")
+	}
 
 	// Store BuildID inside toolchain binaries as a unique identifier of the
 	// tool being run, for use by content-based staleness determination.
