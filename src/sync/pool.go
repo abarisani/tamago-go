@@ -83,7 +83,7 @@ type poolLocal struct {
 //go:linkname runtime_randn runtime.randn
 func runtime_randn(n uint32) uint32
 
-// set at compile time when GOSOFT=1
+// set at compile time when GOOS=1
 var soft string
 
 var poolRaceHash [128]uint64
