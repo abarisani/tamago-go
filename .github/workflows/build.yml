@@ -29,4 +29,5 @@ jobs:
         GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 ./bin/go tool dist test
     - name: Run Go distribution tests under tamago/riscv64 GOSOFT=1
       run: |
+        ./bin/go clean -cache
         GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 GOSOFT=1 ./bin/go tool dist test
