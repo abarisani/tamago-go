@@ -10,9 +10,6 @@ import (
 	"unsafe"
 )
 
-// set at compile time when GOSOFT=1
-var soft string
-
 // These functions cannot have go:noescape annotations,
 // because while ptr does not escape, new does.
 // If new is marked as not escaping, the compiler will make incorrect
@@ -92,11 +89,7 @@ func sync_atomic_StorePointer(ptr *unsafe.Pointer, new unsafe.Pointer) {
 	if goexperiment.CgoCheck2 {
 		cgoCheckPtrWrite(ptr, new)
 	}
-	if len(soft) > 0 {
-		atomic.Storeuintptr((*uintptr)(unsafe.Pointer(ptr)), uintptr(new))
-	} else {
-		sync_atomic_StoreUintptr((*uintptr)(unsafe.Pointer(ptr)), uintptr(new))
-	}
+	sync_atomic_StoreUintptr((*uintptr)(unsafe.Pointer(ptr)), uintptr(new))
 }
 
 //go:linkname sync_atomic_SwapUintptr sync/atomic.SwapUintptr
@@ -110,9 +103,6 @@ func sync_atomic_SwapPointer(ptr *unsafe.Pointer, new unsafe.Pointer) unsafe.Poi
 	}
 	if goexperiment.CgoCheck2 {
 		cgoCheckPtrWrite(ptr, new)
-	}
-	if len(soft) > 0 {
-		return unsafe.Pointer(atomic.Xchguintptr((*uintptr)(noescape(unsafe.Pointer(ptr))), uintptr(new)))
 	}
 	old := unsafe.Pointer(sync_atomic_SwapUintptr((*uintptr)(noescape(unsafe.Pointer(ptr))), uintptr(new)))
 	return old
@@ -129,9 +119,6 @@ func sync_atomic_CompareAndSwapPointer(ptr *unsafe.Pointer, old, new unsafe.Poin
 	}
 	if goexperiment.CgoCheck2 {
 		cgoCheckPtrWrite(ptr, new)
-	}
-	if len(soft) > 0 {
-		return atomic.Casuintptr((*uintptr)(noescape(unsafe.Pointer(ptr))), uintptr(old), uintptr(new))
 	}
 	return sync_atomic_CompareAndSwapUintptr((*uintptr)(noescape(unsafe.Pointer(ptr))), uintptr(old), uintptr(new))
 }
