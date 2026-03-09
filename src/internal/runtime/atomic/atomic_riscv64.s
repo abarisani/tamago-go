@@ -418,7 +418,7 @@ TEXT ·Or32(SB), NOSPLIT, $0-20
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
 #ifdef GOSOFT
-	MOVW	(A0), T2
+	MOVW	(A0), A2
 	OR	A1, A2, T2
 	MOVW	T2, (A0)
 #else
@@ -432,7 +432,7 @@ TEXT ·And32(SB), NOSPLIT, $0-20
 	MOV	ptr+0(FP), A0
 	MOVW	val+8(FP), A1
 #ifdef GOSOFT
-	MOVW	(A0), T2
+	MOVW	(A0), A2
 	AND	A1, A2, T2
 	MOVW	T2, (A0)
 #else
