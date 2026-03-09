@@ -1284,6 +1284,7 @@ func validateCI(ctxt *obj.Link, ins *instruction) {
 	} else {
 		wantImmI(ctxt, ins, ins.imm, 6)
 	}
+
 	switch ins.as {
 	case ACNOP, ACADDI, ACADDIW, ACSLLI:
 		wantIntReg(ctxt, ins, "rd", ins.rd)

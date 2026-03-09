@@ -611,7 +611,7 @@ func (gcToolchain) ld(b *Builder, root *Action, targetPath, importcfg, mainpkg s
 		ldflags = append(ldflags, "-fipso", filepath.Join(root.Objdir, "fips.o"))
 	}
 	if buildcfg.GOSOFT == "1" {
-		ldflags = append(ldflags, "-X", "sync.soft=1")
+		ldflags = append(ldflags, "-X", "sync.soft=1", "-X", "runtime.soft=1")
 	}
 
 	// Store BuildID inside toolchain binaries as a unique identifier of the
