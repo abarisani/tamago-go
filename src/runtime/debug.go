@@ -9,6 +9,9 @@ import (
 	"unsafe"
 )
 
+// set at compile time when GOSOFT=1
+var soft string
+
 // GOMAXPROCS sets the maximum number of CPUs that can be executing
 // simultaneously and returns the previous setting. If n < 1, it does not change
 // the current setting.
@@ -70,6 +73,10 @@ import (
 func GOMAXPROCS(n int) int {
 	if GOARCH == "wasm" && n > 1 {
 		n = 1 // WebAssembly has no threads yet, so only one CPU is possible.
+	}
+
+	if len(soft) > 0 {
+		n = 1
 	}
 
 	lock(&sched.lock)
