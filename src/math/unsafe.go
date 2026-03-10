@@ -6,6 +6,9 @@ package math
 
 import "unsafe"
 
+// set at compile time when GOSOFT=1
+var soft string
+
 // Despite being an exported symbol,
 // Float32bits is linknamed by widely used packages.
 // Notable members of the hall of shame include:
