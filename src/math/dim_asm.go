@@ -6,12 +6,10 @@
 
 package math
 
-import "runtime"
-
-var haveArchMax = !runtime.Soft()
+var haveArchMax = (soft != "1")
 
 func archMax(x, y float64) float64
 
-var haveArchMin = !runtime.Soft()
+var haveArchMin = (soft != "1")
 
 func archMin(x, y float64) float64
