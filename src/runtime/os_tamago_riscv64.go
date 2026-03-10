@@ -6,7 +6,16 @@
 
 package runtime
 
-import "runtime/goos"
+import (
+	"internal/abi"
+	"runtime/goos"
+)
+
+func init() {
+	if len(soft) > 0 {
+		abi.EffectiveFloatRegSize = 0
+	}
+}
 
 // defined in asm_riscv64.s
 func cputicks() int64
