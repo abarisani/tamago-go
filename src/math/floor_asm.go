@@ -6,14 +6,16 @@
 
 package math
 
-const haveArchFloor = true
+import "runtime"
+
+var haveArchFloor = !runtime.Soft()
 
 func archFloor(x float64) float64
 
-const haveArchCeil = true
+var haveArchCeil = !runtime.Soft()
 
 func archCeil(x float64) float64
 
-const haveArchTrunc = true
+var haveArchTrunc = !runtime.Soft()
 
 func archTrunc(x float64) float64

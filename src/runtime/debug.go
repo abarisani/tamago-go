@@ -12,6 +12,11 @@ import (
 // set at compile time when GOSOFT=1
 var soft string
 
+// Soft returns whether GOSOFT was set to 1 at build time.
+func Soft() bool {
+	return soft == "1"
+}
+
 // GOMAXPROCS sets the maximum number of CPUs that can be executing
 // simultaneously and returns the previous setting. If n < 1, it does not change
 // the current setting.
