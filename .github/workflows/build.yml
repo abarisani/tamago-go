@@ -30,5 +30,4 @@ jobs:
     - name: Run Go distribution tests under tamago/riscv64 GOSOFT=1
       run: |
         ./bin/go clean -cache
-        export QEMU_CPU=rv64,a=off,d=off,h=off,s=on,u=on,zawrs=off
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 GOSOFT=1 ./bin/go tool dist test
+        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 GOSOFT=1 QEMU_CPU=rv64,a=off,d=off,h=off,s=on,u=on,zawrs=off ./bin/go tool dist test
