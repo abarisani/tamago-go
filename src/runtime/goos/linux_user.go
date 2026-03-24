@@ -30,9 +30,11 @@ const (
 )
 
 const (
+	bits = 32 << (^uint(0) >> 63) / 8
+
 	ArenaBaseOffset     = 0
-	HeapAddrBits        = 32
-	LogHeapArenaBytes   = (2 + 20)
+	HeapAddrBits        = (8-bits)*3 + bits*5 // 32-bit:32 64-bit:40
+	LogHeapArenaBytes   = (2+20)
 	LogPallocChunkPages = 9
 	MinPhysPageSize     = 4096
 	StackSystem         = 0
