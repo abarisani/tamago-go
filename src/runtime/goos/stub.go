@@ -40,7 +40,7 @@ const (
 
 	// HeapAddrBits is the number of bits in a heap address (see
 	// runtime.heapAddrBits).
-	HeapAddrBits = 32
+	HeapAddrBits = 40
 
 	// LogHeapArenaBytes is the size of a runtime heap arena in log_2
 	// bytes (see runtime.logHeapArenaBytes).
