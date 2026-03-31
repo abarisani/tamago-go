@@ -35,6 +35,11 @@ func GetRandomData(r []byte) {
 	goos.GetRandomData(r)
 }
 
+// GetG returns the pointer to the current G.
+func GetG() (gp unsafe.Pointer) {
+	return unsafe.Pointer(getg())
+}
+
 // wakeg modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
 // soon as possible.
 //
