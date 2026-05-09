@@ -8,7 +8,9 @@ package drbg
 
 import (
 	entropy "crypto/internal/entropy/v1.0.0"
+	"crypto/internal/sysrand"
 	"sync"
+	"sync/atomic"
 )
 
 // memory is a scratch buffer that is accessed between samples by the entropy
