@@ -212,7 +212,7 @@ TEXT ·Xaddint64(SB),NOSPLIT,$0-24
 	AMOADDD A1, (A0), A0
 	ADD	A0, A1, A0
 #endif
-	MOV	A0, ret+16(FP)
+	MOVW	A0, ret+16(FP)
 	RET
 
 TEXT ·LoadAcq(SB),NOSPLIT|NOFRAME,$0-12
@@ -313,8 +313,8 @@ TEXT ·Xadd(SB), NOSPLIT, $0-20
 	MOVW	T0, (A0)
 	MOVW	T0, A0
 #else
-	AMOADDW	A1, (A0), A2
-	ADD	A2, A1, A0
+	AMOADDW A1, (A0), A2
+	ADD	A2,A1,A0
 #endif
 	MOVW	A0, ret+16(FP)
 	RET
