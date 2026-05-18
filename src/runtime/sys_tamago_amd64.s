@@ -243,7 +243,7 @@ fail:
 // (rather than on the frame pointer):
 //
 //   * AX: success (0), failure (1)
-TEXT runtime·wakeg(SB),NOSPLIT|NOFRAME,$0-0
+TEXT runtime·wakeg(SB),NOSPLIT,$0-0
 	CALL	runtime·findTimer(SB)
 
 	CMPQ	BX, $0

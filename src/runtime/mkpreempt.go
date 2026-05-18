@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"go/format"
 	"io"
-	"internal/goexperiment"
 	"log"
 	"os"
 	"strings"
