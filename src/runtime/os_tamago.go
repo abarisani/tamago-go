@@ -282,3 +282,13 @@ func minit() {
 func open(name *byte, mode, perm int32) int32        { panic("not implemented") }
 func closefd(fd int32) int32                         { panic("not implemented") }
 func read(fd int32, p unsafe.Pointer, n int32) int32 { panic("not implemented") }
+
+//go:nowritebarrierrec
+//go:nosplit
+func libpreinit() {}
+
+//go:nowritebarrierrec
+//go:nosplit
+func newosproc0(stacksize uintptr, fn unsafe.Pointer) {
+	throw("bad newosproc0")
+}

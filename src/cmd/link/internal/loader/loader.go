@@ -2510,6 +2510,15 @@ var blockedLinknames = map[string][]string{
 	"crypto/internal/rand.SetTestingReader": {"testing/cryptotest"}, // pushed from crypto/internal/rand
 	"testing.checkParallel":                 {"testing/cryptotest"}, // pushed from testing
 	"runtime.addmoduledata":                 {},                     // assembly symbol, disallow all packages
+	// GOOS=tamago
+	"runtime.rt0_amd64_tamago":   {"runtime", "runtime/goos"},
+	"runtime.rt0_arm64_tamago":   {"runtime", "runtime/goos"},
+	"runtime.rt0_arm_tamago":     {"runtime", "runtime/goos"},
+	"runtime.rt0_loong64_tamago": {"runtime", "runtime/goos"},
+	"runtime.rt0_riscv64_tamago": {"runtime", "runtime/goos"},
+	"runtime.settls":             {"runtime", "runtime/goos"},
+	"runtime.findTimer":          {"os/signal"},
+	"runtime.WakeG":              {"os/signal"},
 }
 
 // check if a linkname reference to symbol s from refpkg is allowed
