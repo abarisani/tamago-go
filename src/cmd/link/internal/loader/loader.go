@@ -2510,15 +2510,16 @@ var blockedLinknames = map[string][]string{
 	"crypto/internal/rand.SetTestingReader": {"testing/cryptotest"}, // pushed from crypto/internal/rand
 	"testing.checkParallel":                 {"testing/cryptotest"}, // pushed from testing
 	"runtime.addmoduledata":                 {},                     // assembly symbol, disallow all packages
-	// GOOS=tamago
-	"runtime.rt0_amd64_tamago":   {"runtime", "runtime/goos"},
-	"runtime.rt0_arm64_tamago":   {"runtime", "runtime/goos"},
-	"runtime.rt0_arm_tamago":     {"runtime", "runtime/goos"},
-	"runtime.rt0_loong64_tamago": {"runtime", "runtime/goos"},
-	"runtime.rt0_riscv64_tamago": {"runtime", "runtime/goos"},
-	"runtime.settls":             {"runtime", "runtime/goos"},
+	// Used by GOOS=tamago
+	"os/signal.Relay":            {""}, // used by external interrupt handlers
+	"runtime.CallOnG0":           {""}, // used by external exception handlers
+	"runtime.rt0_amd64_tamago":   {""}, // used by external runtime/goos.CPUInit overlay
+	"runtime.rt0_arm64_tamago":   {""}, // used by external runtime/goos.CPUInit overlay
+	"runtime.rt0_arm_tamago":     {""}, // used by external runtime/goos.CPUInit overlay
+	"runtime.rt0_loong64_tamago": {""}, // used by external runtime/goos.CPUInit overlay
+	"runtime.rt0_riscv64_tamago": {""}, // used by external runtime/goos.CPUInit overlay
 	"runtime.findTimer":          {"os/signal"},
-	"runtime.WakeG":              {"os/signal"},
+	"runtime.wakeG":              {"os/signal"},
 }
 
 // check if a linkname reference to symbol s from refpkg is allowed
@@ -2534,7 +2535,7 @@ func (l *Loader) checkLinkname(refpkg *oReader, name string, s Sym) {
 	pkgs, ok := blockedLinknames[name]
 	if ok {
 		for _, p := range pkgs {
-			if pkg == p {
+			if pkg == p || (buildcfg.GOOS == "tamago" && p == "") {
 				return // pkg is allowed
 			}
 			// crypto/internal/fips140/vX.Y.Z/... is the frozen version of
