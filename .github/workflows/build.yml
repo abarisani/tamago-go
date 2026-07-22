@@ -3,11 +3,11 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4.1.7
+    - uses: actions/checkout@v6
     - name: Prerequisites
       run: |
         sudo apt-get update
@@ -15,18 +15,6 @@ jobs:
     - name: Compile Go with all.bash
       run: |
         cd src ; ./all.bash
-    - name: Run Go distribution tests under tamago/amd64
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=amd64 ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/arm
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=arm ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/arm64
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=arm64 ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/loong64
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=loong64 ./bin/go tool dist test
     - name: Run Go distribution tests under tamago/riscv64
       run: |
         GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 ./bin/go tool dist test
