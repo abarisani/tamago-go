@@ -48,16 +48,6 @@ TEXT runtime·rt0_loong64_tamago(SB),NOSPLIT|NOFRAME,$0
 	WORD	$0 // crash if reached
 	RET
 
-// func GetG() (gp uint, pp uint)
-TEXT runtime·GetG(SB),NOSPLIT,$0-16
-	MOVV	g, gp+0(FP)
-
-	MOVV	(g_m)(g), R12
-	MOVV	(m_p)(R12), R12
-	MOVV	R12, pp+8(FP)
-
-	RET
-
 TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	BEQ	R12, R0, fail
 
