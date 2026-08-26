@@ -30,6 +30,12 @@ const (
 )
 
 const (
+	ramStart       uint = 0x80000000
+	ramSize        uint = 0x20000000 // 512MB
+	ramStackOffset uint = 0x100
+)
+
+const (
 	bits = 32 << (^uint(0) >> 63) / 8
 
 	ArenaBaseOffset     = 0
@@ -41,11 +47,7 @@ const (
 )
 
 var (
-	RamStart       uint = 0x80000000
-	RamSize        uint = 0x20000000 // 512MB
-	RamStackOffset uint = 0x100
-
-	Bloc   = uintptr(RamStart)
+	Bloc   = uintptr(ramStart)
 	Exit   = sys_exit_group
 
 	Idle   func(until int64)
