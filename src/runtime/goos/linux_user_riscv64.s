@@ -18,8 +18,8 @@
 #define CLOCK_REALTIME 0
 
 TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
-	MOV	·RamStart(SB), A0
-	MOV	·RamSize(SB), A1
+	MOV	$(const_ramStart), A0
+	MOV	$(const_ramSize), A1
 	MOV	$0x3, A2	// PROT_READ | PROT_WRITE
 	MOV	$0x22, A3	// MAP_PRIVATE | MAP_ANONYMOUS
 	MOV	$0xffffffff, A4
@@ -28,9 +28,9 @@ TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 	ECALL
 
 	// set stack pointer
-	MOV	·RamStart(SB), X2
-	MOV	·RamSize(SB), T1
-	MOV	·RamStackOffset(SB), T2
+	MOV	$(const_ramStart), X2
+	MOV	$(const_ramSize), T1
+	MOV	$(const_ramStackOffset), T2
 	ADD	T1, X2
 	SUB	T2, X2
 
