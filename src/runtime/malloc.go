@@ -661,16 +661,8 @@ func mallocinit() {
 		//
 		// 3. We try to stake out a reasonably large initial
 		// heap reservation.
-		var heapArenaCount uintptr = (1 << arenaBits)
 
-		// On TamaGo each memory allocation directly consumes physical
-		// memory. To keep heapArenas size as low as possible we
-		// allocate the exact number needed to fill available RAM.
-		if goos.IsTamago == 1 {
-			heapArenaCount = uintptr(goos_overlay.RamSize)/heapArenaBytes
-		}
-
-		arenaMetaSize := heapArenaCount * unsafe.Sizeof(heapArena{})
+		const arenaMetaSize = (1 << arenaBits) * unsafe.Sizeof(heapArena{})
 		meta := uintptr(sysReserve(nil, arenaMetaSize, "heap reservation"))
 		if meta != 0 {
 			mheap_.heapArenaAlloc.init(meta, arenaMetaSize, true)

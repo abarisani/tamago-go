@@ -14,6 +14,21 @@ import (
 	"unsafe"
 )
 
+// CallOnG0 calls a function (func()) on g0 stack.
+func CallOnG0(func())
+
+// TextRegion returns the start and end addresses of the physical RAM
+// containing the Go runtime executable instructions.
+func TextRegion() (start, end uintptr) {
+	return firstmoduledata.text, firstmoduledata.etext
+}
+
+// DataRegion returns the start and end addresses of the physical RAM
+// containing the Go runtime global symbols.
+func DataRegion() (start, end uintptr) {
+	return firstmoduledata.data, firstmoduledata.enoptrbss
+}
+
 type mOS struct {
 	waitsemacount uint32
 }
@@ -29,9 +44,6 @@ func hwinit1() {
 func nanotime1() int64 {
 	return goos.Nanotime()
 }
-
-// CallOnG0 calls a function (func()) on g0 stack.
-func CallOnG0(func())
 
 // wakeG modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
 // soon as possible.
