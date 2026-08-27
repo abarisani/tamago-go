@@ -74,8 +74,9 @@ var depsRules = `
 
 	internal/cpu, internal/strconv < simd/archsimd;
 
+	internal/goarch,
 	unsafe
-	< runtime/goos;
+	< internal/runtime/goospkg;
 
 	# RUNTIME is the core runtime group of packages, all of them very light-weight.
 	internal/abi,
@@ -93,7 +94,7 @@ var depsRules = `
 	math/bits,
 	structs,
 	simd/archsimd,
-	runtime/goos
+	internal/runtime/goospkg
 	< internal/bytealg
 	< internal/stringslite
 	< internal/unsafeheader

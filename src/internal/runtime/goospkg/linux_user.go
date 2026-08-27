@@ -4,11 +4,10 @@
 
 //go:build tamago && (amd64 || arm || arm64 || loong64 || riscv64)
 
-// Package goos provides support for using `GOOS=tamago` in Linux user
-// space.
-package goos
+package goospkg
 
 import (
+	"internal/goarch"
 	"unsafe"
 )
 
@@ -36,10 +35,8 @@ const (
 )
 
 const (
-	bits = 32 << (^uint(0) >> 63) / 8
-
 	ArenaBaseOffset     = 0
-	HeapAddrBits        = (8-bits)*3 + bits*5 // 32-bit:32 64-bit:40
+	HeapAddrBits        = (8-goarch.PtrSize)*3 + goarch.PtrSize*5 // 32-bit:32 64-bit:40
 	LogHeapArenaBytes   = (2 + 20)
 	LogPallocChunkPages = 9
 	MinPhysPageSize     = 4096
@@ -47,8 +44,8 @@ const (
 )
 
 var (
-	Bloc   = uintptr(ramStart)
-	Exit   = sys_exit_group
+	Bloc = uintptr(ramStart)
+	Exit = sys_exit_group
 
 	Idle   func(until int64)
 	ProcID func() uint64

@@ -7,15 +7,15 @@
 package runtime
 
 import (
-	"runtime/goos"
+	"internal/runtime/goospkg"
 )
 
 // beforeIdle gets called by the scheduler if no goroutine is awake.
 //
 //go:yeswritebarrierrec
 func beforeIdle(now, pollUntil int64) (gp *g, otherReady bool) {
-	if goos.Idle != nil {
-		goos.Idle(pollUntil)
+	if goospkg.Idle != nil {
+		goospkg.Idle(pollUntil)
 	}
 
 	if now > 0 {
