@@ -13,11 +13,11 @@ import (
 	"internal/cpu"
 	"internal/goarch"
 	"internal/goexperiment"
+	"internal/goos"
 	"internal/runtime/atomic"
 	"internal/runtime/gc"
 	"internal/runtime/goospkg"
 	"internal/runtime/sys"
-	"internal/goos"
 	"unsafe"
 )
 
