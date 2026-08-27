@@ -892,7 +892,7 @@ func schedinit() {
 		randinit() // must run before mallocinit
 	}
 	mallocinit()
-	if! randomizeHeapBase {
+	if !randomizeHeapBase {
 		randinit() // must run before alginit, mcommoninit
 	}
 
@@ -2997,7 +2997,7 @@ func newm1(mp *m) {
 // The calling thread must itself be in a known-good state.
 func startTemplateThread() {
 	if GOARCH == "wasm" || // no threads on wasm yet
-	   GOOS == "tamago" { // Ms are bound to P on tamago
+		GOOS == "tamago" { // Ms are bound to P on tamago
 		return
 	}
 
@@ -5700,7 +5700,7 @@ func Breakpoint() {
 //go:nosplit
 func dolockOSThread() {
 	if GOARCH == "wasm" || // no threads on wasm yet
-	   GOOS == "tamago" { // Ms are bound to P on tamago
+		GOOS == "tamago" { // Ms are bound to P on tamago
 		return
 	}
 	gp := getg()
@@ -5753,7 +5753,7 @@ func lockOSThread() {
 //go:nosplit
 func dounlockOSThread() {
 	if GOARCH == "wasm" || // no threads on wasm yet
-	   GOOS == "tamago" { // Ms are bound to P on tamago
+		GOOS == "tamago" { // Ms are bound to P on tamago
 		return
 	}
 	gp := getg()
