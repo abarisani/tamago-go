@@ -12,11 +12,11 @@ import (
 	"internal/goos"
 	"internal/runtime/atomic"
 	"internal/runtime/exithook"
+	"internal/runtime/goospkg"
 	"internal/runtime/maps"
 	"internal/runtime/sys"
 	"internal/strconv"
 	"internal/stringslite"
-	goos_overlay "runtime/goos"
 	"unsafe"
 )
 
@@ -2897,7 +2897,7 @@ func newm(fn func(), pp *p, id int64) {
 	// never dropped and mapped 1:1 to Ps. Therefore when a threading
 	// implementation is detect we ensure an M count that never exceeds
 	// GOMAXPROCS.
-	if goos_overlay.Task != nil && (id >= int64(gomaxprocs) || id < 0) && pp != nil {
+	if goospkg.Task != nil && (id >= int64(gomaxprocs) || id < 0) && pp != nil {
 		if fn != nil {
 			// Caller incremented sched.nmspinning expecting a
 			// spinning M to materialize. Since we're not creating
