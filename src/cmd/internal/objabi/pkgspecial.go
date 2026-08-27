@@ -53,6 +53,7 @@ var runtimePkgs = []string{
 	"internal/runtime/exithook",
 	"internal/runtime/gc",
 	"internal/runtime/gc/scan",
+	"internal/runtime/goospkg",
 	"internal/runtime/maps",
 	"internal/runtime/math",
 	"internal/runtime/sys",
