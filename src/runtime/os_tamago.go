@@ -9,8 +9,8 @@ package runtime
 import (
 	"internal/abi"
 	"internal/runtime/atomic"
-	"internal/runtime/math"
 	"internal/runtime/goospkg"
+	"internal/runtime/math"
 	"unsafe"
 )
 
