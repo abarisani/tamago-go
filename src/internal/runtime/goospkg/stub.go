@@ -4,7 +4,7 @@
 
 //go:build !tamago
 
-// Package goos describes required, as well as optional, runtime
+// Package goospkg describes required, as well as optional, runtime
 // functions/variables for custom GOOS implementations as supported by the
 // GOOSPKG variable.
 //
@@ -28,7 +28,7 @@
 // [microvm]: https://github.com/usbarmory/tamago/tree/master/board/firecracker/microvm
 // [linux]: https://github.com/usbarmory/tamago/tree/master/user/linux
 // [applet]: https://github.com/usbarmory/GoTEE/tree/master/applet
-package goos
+package goospkg
 
 import "unsafe"
 

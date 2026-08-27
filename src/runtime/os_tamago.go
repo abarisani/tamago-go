@@ -10,7 +10,7 @@ import (
 	"internal/abi"
 	"internal/runtime/atomic"
 	"internal/runtime/math"
-	"runtime/goos"
+	"internal/runtime/goospkg"
 	"unsafe"
 )
 
@@ -34,15 +34,15 @@ type mOS struct {
 }
 
 func hwinit0() {
-	goos.Hwinit0()
+	goospkg.Hwinit0()
 }
 
 func hwinit1() {
-	goos.Hwinit1()
+	goospkg.Hwinit1()
 }
 
 func nanotime1() int64 {
-	return goos.Nanotime()
+	return goospkg.Nanotime()
 }
 
 // wakeG modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
@@ -81,7 +81,7 @@ const stacksize = 8192 * 1024 // 8192KB
 //
 //go:nowritebarrier
 func newosproc(mp *m) {
-	if goos.Task == nil {
+	if goospkg.Task == nil {
 		throw("newosproc: not implemented")
 	}
 
@@ -91,7 +91,7 @@ func newosproc(mp *m) {
 		exit(1)
 	}
 
-	goos.Task(unsafe.Pointer(uintptr(stack)+stacksize), unsafe.Pointer(mp), unsafe.Pointer(mp.g0), unsafe.Pointer(abi.FuncPCABI0(mstart)))
+	goospkg.Task(unsafe.Pointer(uintptr(stack)+stacksize), unsafe.Pointer(mp), unsafe.Pointer(mp.g0), unsafe.Pointer(abi.FuncPCABI0(mstart)))
 }
 
 // Called to initialize a new m (including the bootstrap m).
@@ -109,8 +109,8 @@ func osinit() {
 	physPageSize = 4096
 	numCPUStartup = 1
 
-	if goos.Bloc != 0 {
-		bloc = goos.Bloc
+	if goospkg.Bloc != 0 {
+		bloc = goospkg.Bloc
 		blocMax = bloc
 	} else {
 		initBloc()
@@ -118,8 +118,8 @@ func osinit() {
 }
 
 func readRandom(r []byte) int {
-	goos.InitRNG()
-	goos.GetRandomData(r)
+	goospkg.InitRNG()
+	goospkg.GetRandomData(r)
 	return len(r)
 }
 
@@ -161,7 +161,7 @@ func write1(fd uintptr, buf unsafe.Pointer, count int32) int32 {
 
 	for i := uintptr(0); i < c; i++ {
 		p := (*byte)(unsafe.Pointer(uintptr(buf) + i))
-		goos.Printk(*p)
+		goospkg.Printk(*p)
 	}
 
 	return int32(c)
@@ -194,8 +194,8 @@ func usleep_no_g(usec uint32) {
 }
 
 func exit(code int32) {
-	if goos.Exit != nil {
-		goos.Exit(code)
+	if goospkg.Exit != nil {
+		goospkg.Exit(code)
 	}
 
 	print("exit with code ", code, " halting\n")
@@ -243,8 +243,8 @@ func semasleep(ns int64) int {
 				return -1
 			}
 		}
-		if goos.Idle != nil {
-			goos.Idle(deadline)
+		if goospkg.Idle != nil {
+			goospkg.Idle(deadline)
 		}
 	}
 }
@@ -253,8 +253,8 @@ func semasleep(ns int64) int {
 func semawakeup(mp *m) {
 	atomic.Xadd(&mp.waitsemacount, 1)
 
-	if goos.Wake != nil {
-		goos.Wake(mp.procid)
+	if goospkg.Wake != nil {
+		goospkg.Wake(mp.procid)
 	}
 }
 
@@ -263,12 +263,12 @@ const preemptMSupported = false
 func preemptM(mp *m) {}
 
 func minit() {
-	if goos.ProcID == nil {
+	if goospkg.ProcID == nil {
 		return
 	}
 
 	gp := getg()
-	gp.m.procid = goos.ProcID()
+	gp.m.procid = goospkg.ProcID()
 }
 
 // Stubs so tests can link correctly. These should never be called.

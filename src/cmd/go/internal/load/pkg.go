@@ -36,7 +36,7 @@ import (
 	"cmd/go/internal/cfg"
 	"cmd/go/internal/fips140"
 	"cmd/go/internal/fsys"
-	"cmd/go/internal/goos"
+	"cmd/go/internal/goospkg"
 	"cmd/go/internal/gover"
 	"cmd/go/internal/imports"
 	"cmd/go/internal/modfetch"
@@ -902,7 +902,7 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 		if newPath, dir, ok := fips140.ResolveImport(path); ok {
 			r.path = newPath
 			r.dir = dir
-		} else if newPath, dir, ok := goos.ResolveImport(ld, path); ok {
+		} else if newPath, dir, ok := goospkg.ResolveImport(ld, path); ok {
 			r.path = newPath
 			r.dir = dir
 		} else if cfg.ModulesEnabled {

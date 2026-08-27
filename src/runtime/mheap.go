@@ -15,9 +15,9 @@ import (
 	"internal/goexperiment"
 	"internal/runtime/atomic"
 	"internal/runtime/gc"
+	"internal/runtime/goospkg"
 	"internal/runtime/sys"
 	"internal/goos"
-	goos_overlay "runtime/goos"
 	"unsafe"
 )
 
@@ -25,7 +25,7 @@ const (
 	// minPhysPageSize is a lower-bound on the physical page size. The
 	// true physical page size may be larger than this. In contrast,
 	// sys.PhysPageSize is an upper-bound on the physical page size.
-	minPhysPageSize = 4096*(1-goos.IsTamago) + goos.IsTamago*goos_overlay.MinPhysPageSize
+	minPhysPageSize = 4096*(1-goos.IsTamago) + goos.IsTamago*goospkg.MinPhysPageSize
 
 	// maxPhysPageSize is the maximum page size the runtime supports.
 	maxPhysPageSize = 512 << 10

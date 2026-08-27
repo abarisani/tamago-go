@@ -52,7 +52,7 @@ import (
 	"internal/goos"
 	"internal/runtime/atomic"
 	"internal/runtime/gc"
-	goos_overlay "runtime/goos"
+	"internal/runtime/goospkg"
 	"unsafe"
 )
 
@@ -63,7 +63,7 @@ const (
 	// size (see heapArenaBytes).
 	pallocChunkPages    = 1 << logPallocChunkPages
 	pallocChunkBytes    = pallocChunkPages * pageSize
-	logPallocChunkPages = 9*(1-goarch.IsWasm)*(1-goos.IsTamago) + 6*goarch.IsWasm + goos.IsTamago*goos_overlay.LogPallocChunkPages
+	logPallocChunkPages = 9*(1-goarch.IsWasm)*(1-goos.IsTamago) + 6*goarch.IsWasm + goos.IsTamago*goospkg.LogPallocChunkPages
 	logPallocChunkBytes = logPallocChunkPages + gc.PageShift
 
 	// The number of radix bits for each level.

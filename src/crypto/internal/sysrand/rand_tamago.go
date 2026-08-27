@@ -5,7 +5,7 @@
 package sysrand
 
 import (
-	"runtime/goos"
+	"internal/runtime/goospkg"
 	"sync"
 )
 
@@ -15,7 +15,7 @@ func read(b []byte) error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	goos.GetRandomData(b)
+	goospkg.GetRandomData(b)
 
 	return nil
 }
