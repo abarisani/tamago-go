@@ -34,11 +34,11 @@ type mOS struct {
 }
 
 func hwinit0() {
-	goospkg.Hwinit0()
+	goospkg.InitHW0()
 }
 
 func hwinit1() {
-	goospkg.Hwinit1()
+	goospkg.InitHW1()
 }
 
 func nanotime1() int64 {
@@ -161,7 +161,7 @@ func write1(fd uintptr, buf unsafe.Pointer, count int32) int32 {
 
 	for i := uintptr(0); i < c; i++ {
 		p := (*byte)(unsafe.Pointer(uintptr(buf) + i))
-		goospkg.Printk(*p)
+		goospkg.WriteConsole(*p)
 	}
 
 	return int32(c)

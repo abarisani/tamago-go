@@ -63,13 +63,13 @@ const (
 // first instruction set executed.
 func CPUInit() {}
 
-// Hwinit0 takes care of the lower level initialization triggered before
+// InitHW0 takes care of the lower level initialization triggered before
 // runtime setup (pre World start).
 //
 // It must be defined using Go's Assembler to retain Go's commitment to
 // backward compatibility, otherwise extreme care must be taken as the lack of
 // World start does not allow memory allocation.
-func Hwinit0() {}
+func InitHW0() {}
 
 // InitRNG initializes random number generation.
 func InitRNG() {}
@@ -79,27 +79,30 @@ func GetRandomData(b []byte) {}
 
 // Nanotime returns the system time in nanoseconds.
 //
-// Before [Hwinit1] it must be defined using Go's Assembler to retain Go's
+// Before [InitHW1] it must be defined using Go's Assembler to retain Go's
 // commitment to backward compatibility, otherwise extreme care must be taken
 // as the lack of World start does not allow memory allocation.
 func Nanotime() int64 { return 0 }
 
-// Printk handles character printing to standard output.
+// WriteConsole handles character printing to standard console.  Runtime output
+// to standard output and standard error is written through this function one
+// character at a time.
 //
-// Before [Hwinit1] it must be defined using Go's Assembler to retain Go's
+// Before [InitHW1] it must be defined using Go's Assembler to retain Go's
 // commitment to backward compatibility, otherwise extreme care must be taken
 // as the lack of World start does not allow memory allocation.
-func Printk(c byte) {}
+func WriteConsole(c byte) {}
 
-// Hwinit1 takes care of the lower level initialization triggered early in
+// InitHW1 takes care of the lower level initialization triggered early in
 // runtime setup (post World start).
-func Hwinit1() {}
+func InitHW1() {}
 
 // Optional variables/functions.
 var (
 	// Bloc is an optional variable which can be set to redefine the heap
 	// memory start address, this is typically only required on OS
-	// supported environments.
+	// supported environments. When used it must be set with a static
+	// initializer before package initialization.
 	Bloc uintptr
 
 	// Exit is an optional function which can be set to override default
@@ -111,7 +114,8 @@ var (
 	Idle func(until int64)
 
 	// ProcID is an optional function which can be set to provide the
-	// processor identifier for tracing purposes.
+	// processor identifier for tracing purposes. When used it must be set
+	// with a static initializer before package initialization.
 	ProcID func() uint64
 
 	// Task is an optional function which can be set to provide an
