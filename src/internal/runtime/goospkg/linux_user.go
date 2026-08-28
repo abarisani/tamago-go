@@ -51,9 +51,9 @@ var (
 	ProcID func() uint64
 	Wake   func(uint64)
 
-	Hwinit0  = func() {}
+	InitHW0  = func() {}
 	InitRNG  = func() {}
-	Hwinit1  = func() {}
+	InitHW1  = func() {}
 	Nanotime = sys_clock_gettime
 )
 
@@ -74,7 +74,7 @@ func GetRandomData(b []byte) {
 // preallocated memory to avoid malloc during panic
 var a [1]byte
 
-func Printk(c byte) {
+func WriteConsole(c byte) {
 	a[0] = c
 	sys_write(&a[0])
 }
