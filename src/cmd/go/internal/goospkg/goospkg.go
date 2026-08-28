@@ -18,7 +18,7 @@
 //
 // When GOOSPKG is set it defines a module repository root path to be used as
 // alias for [internal/runtime/goospkg], the implementation must live under
-// module subdirectory "goos".
+// module subdirectory "goospkg".
 //
 // ResolveImport is called to resolve the [internal/runtime/goospkg] import, in
 // a manner similar to fips140 snapshot logic (see
@@ -75,7 +75,7 @@ func ResolveImport(moduleLoader *modload.Loader, imp string) (newPath, dir strin
 	}
 
 	if cfg.GOOSPKG != "" {
-		dir = filepath.Join(goosPkgSrcDir(moduleLoader), "goos")
+		dir = filepath.Join(goosPkgSrcDir(moduleLoader), "goospkg")
 	} else {
 		// fallback to bundled Linux userspace GOOSPKG
 		if os.Getenv("GOHOSTOS") == "linux" && (cfg.Goarch == "amd64" || cfg.Goarch == "arm" || cfg.Goarch == "arm64" || cfg.Goarch == "loong64" || cfg.Goarch == "riscv64") {
