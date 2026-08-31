@@ -12,7 +12,7 @@ import (
 	"internal/goos"
 	"internal/runtime/atomic"
 	"internal/runtime/exithook"
-	"internal/runtime/goospkg"
+	goospkg "internal/runtime/goospkg"
 	"internal/runtime/maps"
 	"internal/runtime/sys"
 	"internal/strconv"
