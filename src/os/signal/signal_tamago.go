@@ -7,27 +7,18 @@ package signal
 import (
 	"os"
 	"syscall"
-	"time"
 	_ "unsafe"
 )
 
-var (
-	loopG uintptr
-	sig   syscall.Signal
-)
-
 // Defined by the runtime package.
-func getgp() uintptr
+func signal_recv() int
+func signal_loop_init()
 
 func loop() {
-	loopG = getgp()
+	signal_loop_init()
 
 	for {
-		// Sleep indefinitely until woken up by [Relay] through
-		// runtime.wakeg.
-		time.Sleep(1<<63 - 1) // math.MaxInt64
-		process(sig)
-		sig = -1
+		process(syscall.Signal(signal_recv()))
 	}
 }
 
@@ -57,24 +48,3 @@ func ignoreSignal(sig int)  {}
 func signalIgnored(sig int) bool {
 	return false
 }
-
-//go:linkname waitUntilIdle os/signal.signalWaitUntilIdle
-func waitUntilIdle() {
-	for !Waiting() {
-	}
-}
-
-// Relay sends a signal to the [Notify] channel.
-//
-// To make it suitable for invocation in bare metal interrupt/exception
-// handlers, the function is implemented in assembly avoiding allocation and
-// runtime use.
-//
-//go:nosplit
-func Relay(sig syscall.Signal)
-
-// Waiting returns whether package signal is blocked waiting an incoming signal
-// to [Notify].
-//
-//go:nosplit
-func Waiting() bool
