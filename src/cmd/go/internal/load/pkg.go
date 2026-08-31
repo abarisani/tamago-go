@@ -404,7 +404,7 @@ func (p *Package) copyBuild(opts PackageOpts, pp *build.Package) {
 	p.BinaryOnly = pp.BinaryOnly
 
 	// TODO? Target
-	p.Goroot = pp.Goroot || fips140.Snapshot() && str.HasFilePathPrefix(p.Dir, fips140.Dir())
+	p.Goroot = pp.Goroot || fips140.Snapshot() && str.HasFilePathPrefix(p.Dir, fips140.Dir()) || goospkg.IsOverlayDir(p.Dir)
 	p.Standard = p.Goroot && p.ImportPath != "" && search.IsStandardImportPath(p.ImportPath)
 	p.GoFiles = pp.GoFiles
 	p.CgoFiles = pp.CgoFiles
@@ -1551,6 +1551,13 @@ func disallowInternal(ld *modload.Loader, ctx context.Context, srcDir string, im
 			return nil // crypto/internal/fips140 can use crypto/internal
 		}
 		goto Error
+	}
+
+	// The GOOSPKG overlay comes from a non-GOROOT directory and is imported both
+	// by the runtime and by the module providing it, so the usual directory rules
+	// cannot apply. Its visibility is that of the module, not of GOROOT.
+	if goospkg.Visible(p.ImportPath) {
+		return nil
 	}
 
 	if p.Module == nil {
