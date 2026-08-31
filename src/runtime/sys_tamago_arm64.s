@@ -47,6 +47,11 @@ TEXT runtime·rt0_arm64_tamago(SB),NOSPLIT|NOFRAME,$0
 	BL	runtime·mstart(SB)
 	UNDEF
 
+// func CallOnG0(func())
+TEXT runtime·CallOnG0(SB),NOSPLIT,$0
+	JMP	runtime·systemstack(SB)
+	RET
+
 TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	CMP	$0, R0
 	BEQ	fail
@@ -133,6 +138,21 @@ TEXT runtime·wakeG(SB),NOSPLIT,$0-0
 	RET
 fail:
 	MOVD	$1, R0
+	RET
+
+// func SendSignal(s int)
+TEXT internal∕runtime∕goospkg·SendSignal(SB),NOSPLIT|NOFRAME,$0-8
+	MOVD	sig+0(FP), R0
+	MOVD	R0, ·sig(SB)
+	MOVD	·loopG(SB), R0
+	B	runtime·wakeG(SB)
+
+// func SignalReady() bool
+TEXT internal∕runtime∕goospkg·SignalReady(SB),NOSPLIT,$0-1
+	MOVD	·loopG(SB), R0
+	CALL	runtime·findTimer(SB)
+	EOR	$1, R1
+	MOVB	R1, ret+0(FP)
 	RET
 
 // never called (cgo not supported)

@@ -266,3 +266,18 @@ TEXT runtime·wakeG(SB),NOSPLIT,$0-0
 fail:
 	MOVQ	$1, AX
 	RET
+
+// func SendSignal(s int)
+TEXT internal∕runtime∕goospkg·SendSignal(SB),NOSPLIT|NOFRAME,$0-8
+	MOVQ	s+0(FP), AX
+	MOVQ	AX, ·sig(SB)
+	MOVQ	·loopG(SB), AX
+	JMP	runtime·wakeG(SB)
+
+// func SignalReady() bool
+TEXT internal∕runtime∕goospkg·SignalReady(SB),NOSPLIT,$0-1
+	MOVQ	·loopG(SB), AX
+	CALL	runtime·findTimer(SB)
+	XORQ	$1, BX
+	MOVB	BX, ret+0(FP)
+	RET
