@@ -6,7 +6,7 @@
 
 // Package goospkg describes required, as well as optional, runtime
 // functions/variables for custom GOOS implementations as supported by the
-// GOOSPKG variable.
+// GOOSPKG variable for [internal/runtime/goospkg] overlay.
 //
 // These hooks act as a "Rosetta Stone" for integration of a freestanding Go
 // runtime within an arbitrary environment, whether bare metal or OS supported.
@@ -96,6 +96,16 @@ func WriteConsole(c byte) {}
 // InitHW1 takes care of the lower level initialization triggered early in
 // runtime setup (post World start).
 func InitHW1() {}
+
+// SendSignal delivers a signal to be handled through [signal.Notify]. Its
+// implementation is linked from the Go runtime, rather than GOOSPKG, and is
+// provided to be called from exception handlers written in Go assembly.
+func SendSignal(s int) {}
+
+// SignalReady returns whether package [signal] is blocked waiting for an
+// incoming signal or it is handling one through [signal.Notify]. Its
+// implementation is linked from the Go runtime and not GOOSPKG.
+func SignalReady() bool { return false }
 
 // Optional variables/functions.
 var (

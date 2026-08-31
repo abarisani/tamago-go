@@ -48,6 +48,11 @@ TEXT runtime·rt0_riscv64_tamago(SB),NOSPLIT|NOFRAME,$0
 	WORD $0 // crash if reached
 	RET
 
+// func CallOnG0(func())
+TEXT runtime·CallOnG0(SB),NOSPLIT,$0
+	JMP	runtime·systemstack(SB)
+	RET
+
 TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	BEQ	T0, ZERO, fail
 
@@ -126,4 +131,19 @@ TEXT runtime·wakeG(SB),NOSPLIT,$0-0
 	RET
 fail:
 	MOV	$1, T0
+	RET
+
+// func SendSignal(s int)
+TEXT internal∕runtime∕goospkg·SendSignal(SB),NOSPLIT|NOFRAME,$0-8
+	MOV	sig+0(FP), A0
+	MOV	A0, ·sig(SB)
+	MOV	·loopG(SB), T0
+	JMP	runtime·wakeG(SB)
+
+// func SignalReady() bool
+TEXT internal∕runtime∕goospkg·SignalReady(SB),NOSPLIT,$0-1
+	MOV	·loopG(SB), T0
+	CALL	runtime·findTimer(SB)
+	XOR	$1, T1
+	MOV	T1, ret+0(FP)
 	RET

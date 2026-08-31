@@ -2422,7 +2422,7 @@ func abiToVer(abi uint16, localSymVersion int) int {
 
 // A list of blocked linknames. Some linknames are allowed only
 // in specific packages. This maps symbol names to allowed packages.
-// If a name is not in this map, it is allowed iff the definition
+// If a name is not in this map, it is allowed if the definition
 // has a linkname (push).
 // If a name is in this map, it is allowed only in listed packages,
 // even if it has a linknamed definition.
@@ -2511,16 +2511,16 @@ var blockedLinknames = map[string][]string{
 	"testing.checkParallel":                 {"testing/cryptotest"}, // pushed from testing
 	"runtime.addmoduledata":                 {},                     // assembly symbol, disallow all packages
 	// Used by GOOS=tamago
-	"internal/runtime/goospkg.CPUInit": {"runtime"},
-	"os/signal.Relay":                  {""}, // used by external interrupt handlers
-	"runtime.CallOnG0":                 {""}, // used by external exception handlers
-	"runtime.rt0_amd64_tamago":         {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_arm64_tamago":         {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_arm_tamago":           {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_loong64_tamago":       {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_riscv64_tamago":       {""}, // used by external goospkg.CPUInit overlay
-	"runtime.findTimer":                {"os/signal"},
-	"runtime.wakeG":                    {"os/signal"},
+	"internal/runtime/goospkg.CPUInit":    {"runtime"},
+	"internal/runtime/goospkg.SendSignal": {""}, // used by external exception handlers
+	"runtime.CallOnG0":                    {""}, // used by external exception handlers
+	"runtime.rt0_amd64_tamago":            {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_arm64_tamago":            {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_arm_tamago":              {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_loong64_tamago":          {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_riscv64_tamago":          {""}, // used by external goospkg.CPUInit overlay
+	"runtime.findTimer":                   {"os/signal"},
+	"runtime.wakeG":                       {"os/signal"},
 }
 
 // check if a linkname reference to symbol s from refpkg is allowed
