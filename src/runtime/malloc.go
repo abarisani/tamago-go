@@ -106,7 +106,7 @@ import (
 	"internal/goos"
 	"internal/runtime/atomic"
 	"internal/runtime/gc"
-	"internal/runtime/goospkg"
+	goospkg "internal/runtime/goospkg"
 	"internal/runtime/math"
 	"internal/runtime/sys"
 	"unsafe"

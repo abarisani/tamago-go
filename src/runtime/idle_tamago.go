@@ -7,7 +7,7 @@
 package runtime
 
 import (
-	"internal/runtime/goospkg"
+	goospkg "internal/runtime/goospkg"
 )
 
 // beforeIdle gets called by the scheduler if no goroutine is awake.
