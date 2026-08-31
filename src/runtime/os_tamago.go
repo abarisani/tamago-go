@@ -53,11 +53,6 @@ func nanotime1() int64 {
 // definition in sys_tamago_$GOARCH.s for details.
 func wakeG()
 
-//go:linkname getgp os/signal.getgp
-func getgp() (gp uintptr) {
-	return uintptr(unsafe.Pointer(getg()))
-}
-
 // stubs for unused/unimplemented functionality
 type sigset struct{}
 type gsignalStack struct{}
@@ -128,9 +123,7 @@ func signame(sig uint32) string {
 }
 
 //go:linkname os_sigpipe os.sigpipe
-func os_sigpipe() {
-	throw("too many writes on closed pipe")
-}
+func os_sigpipe() {}
 
 //go:nosplit
 func crash() {
