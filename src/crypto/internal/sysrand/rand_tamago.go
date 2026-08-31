@@ -5,7 +5,7 @@
 package sysrand
 
 import (
-	"internal/runtime/goospkg"
+	goospkg "internal/runtime/goospkg"
 	"sync"
 )
 
