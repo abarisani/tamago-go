@@ -156,6 +156,21 @@ fail:
 	MOVW	$1, R0
 	RET
 
+// func SendSignal(s int)
+TEXT internal∕runtime∕goospkg·SendSignal(SB),NOSPLIT|NOFRAME,$0-4
+	MOVW	sig+0(FP), R0
+	MOVW	R0, ·sig(SB)
+	MOVW	·loopG(SB), R0
+	B	runtime·wakeG(SB)
+
+// func SignalReady() bool
+TEXT internal∕runtime∕goospkg·SignalReady(SB),NOSPLIT,$0-1
+	MOVW	·loopG(SB), R0
+	CALL	runtime·findTimer(SB)
+	EOR	$1, R1
+	MOVB	R1, ret+0(FP)
+	RET
+
 // never called (cgo not supported)
 TEXT runtime·read_tls_fallback(SB),NOSPLIT|NOFRAME,$0
 	MOVW	$0, R0
