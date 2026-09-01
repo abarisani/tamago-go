@@ -16,9 +16,8 @@
 // When GOOSPKG is empty GOROOT/src/internal/runtime/goospkg is imported as
 // expected to resolve [internal/runtime/goospkg].
 //
-// When GOOSPKG is set it defines a module repository root path to be used as
-// alias for [internal/runtime/goospkg], the implementation must live under
-// module subdirectory "goospkg".
+// When GOOSPKG is set it defines a module repository path to be used as alias
+// for [internal/runtime/goospkg].
 //
 // ResolveImport is called to resolve the [internal/runtime/goospkg] import, in
 // a manner similar to fips140 snapshot logic (see
@@ -28,7 +27,9 @@ package goospkg
 import (
 	"context"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -38,10 +39,7 @@ import (
 	"cmd/go/internal/str"
 )
 
-const (
-	importPath  = "internal/runtime/goospkg"
-	goosPkgName = "goospkg"
-)
+const importPath = "internal/runtime/goospkg"
 
 var (
 	goosPkgOnce sync.Once
@@ -55,22 +53,23 @@ func goosPkgSrcDir(moduleLoader *modload.Loader) string {
 		defer func(w bool) { modload.ExplicitWriteGoMod = w }(modload.ExplicitWriteGoMod)
 		modload.ExplicitWriteGoMod = true
 
-		r, err := modload.ListModules(moduleLoader, context.Background(), []string{cfg.GOOSPKG}, 0, "")
+		for p := cfg.GOOSPKG; p != "" && p != "."; p = path.Dir(p) {
+			r, err := modload.ListModules(moduleLoader, context.Background(), []string{p}, 0, "")
+			if err != nil || len(r) == 0 || r[0].Error != nil || r[0].Dir == "" {
+				continue
+			}
 
-		if err != nil {
-			base.Fatalf("go: GOOSPKG=%q not found in module list: %v", cfg.GOOSPKG, err)
-		}
+			rel := strings.TrimPrefix(cfg.GOOSPKG, r[0].Path)
+			goosPkgDir = filepath.Join(r[0].Dir, filepath.FromSlash(rel))
 
-		if len(r) > 0 && r[0].Error == nil {
-			goosPkgDir = r[0].Dir
+			break
 		}
 
 		if len(goosPkgDir) == 0 {
 			base.Fatalf("go: GOOSPKG=%q not found in module list", cfg.GOOSPKG)
 		}
 
-		d := filepath.Join(goosPkgDir, goosPkgName)
-		overlayDir.Store(&d)
+		overlayDir.Store(&goosPkgDir)
 	})
 
 	return goosPkgDir
@@ -104,14 +103,14 @@ func ResolveImport(moduleLoader *modload.Loader, imp string) (newPath, dir strin
 	// for internal/runtime/goospkg: both resolve to the same directory and
 	// are built as a single package, so the runtime and the module see the
 	// same variables.
-	alias := cfg.GOOSPKG != "" && imp == filepath.Join(cfg.GOOSPKG, goosPkgName)
+	alias := cfg.GOOSPKG != "" && imp == cfg.GOOSPKG
 
 	if imp != importPath && !alias {
 		return "", "", false
-	}	
+	}
 
 	if cfg.GOOSPKG != "" {
-		dir = filepath.Join(goosPkgSrcDir(moduleLoader), goosPkgName)
+		dir = goosPkgSrcDir(moduleLoader)
 	} else {
 		// fallback to bundled Linux userspace GOOSPKG
 		if os.Getenv("GOHOSTOS") == "linux" && (cfg.Goarch == "amd64" || cfg.Goarch == "arm" || cfg.Goarch == "arm64" || cfg.Goarch == "loong64" || cfg.Goarch == "riscv64") {
