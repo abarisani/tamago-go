@@ -143,11 +143,6 @@ bad_cpu:
 	CALL	runtime·abort(SB)
 	RET
 
-// func CallOnG0(func())
-TEXT runtime·CallOnG0(SB),NOSPLIT,$0
-	JMP	runtime·systemstack(SB)
-	RET
-
 // This is needed by asm_amd64.s
 TEXT runtime·settls(SB),NOSPLIT,$32
 	MOVW	CS, AX
@@ -280,4 +275,9 @@ TEXT internal∕runtime∕goospkg·SignalReady(SB),NOSPLIT,$0-1
 	CALL	runtime·findTimer(SB)
 	XORQ	$1, BX
 	MOVB	BX, ret+0(FP)
+	RET
+
+// func SystemStack(func())
+TEXT internal∕runtime∕goospkg·SystemStack(SB),NOSPLIT|NOFRAME,$0-8
+	JMP	runtime·systemstack(SB)
 	RET
