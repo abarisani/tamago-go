@@ -97,15 +97,24 @@ func WriteConsole(c byte) {}
 // runtime setup (post World start).
 func InitHW1() {}
 
-// SendSignal delivers a signal to be handled through [signal.Notify]. Its
-// implementation is linked from the Go runtime, rather than GOOSPKG, and is
-// provided to be called from exception handlers written in Go assembly.
+// SendSignal delivers a signal to be handled through [signal.Notify].
+//
+// Its implementation is linked from the Go runtime, rather than GOOSPKG, and
+// is provided to be called from interrupt handlers written in Go assembly.
 func SendSignal(s int) {}
 
 // SignalReady returns whether package [signal] is blocked waiting for an
-// incoming signal or it is handling one through [signal.Notify]. Its
-// implementation is linked from the Go runtime and not GOOSPKG.
+//
+// Its implementation is linked from the Go runtime, rather than GOOSPKG, and
+// is provided to be called from interrupt handlers written in Go assembly.
 func SignalReady() bool { return false }
+
+// SystemStack runs fn on a system stack, it is only meant for use by exception
+// handlers on unrecoverable errors.
+//
+// Its implementation is linked from the Go runtime, rather than GOOSPKG, and
+// is provided to be called from exception handlers written in Go assembly.
+func SystemStack(fn func()) {}
 
 // Optional variables/functions.
 var (

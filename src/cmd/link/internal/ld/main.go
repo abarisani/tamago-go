@@ -259,6 +259,9 @@ func Main(arch *sys.Arch, theArch Arch) {
 	if *FlagRound != -1 && (*FlagRound < 4096 || !isPowerOfTwo(*FlagRound)) {
 		Exitf("invalid -R value 0x%x", *FlagRound)
 	}
+	if *FlagRound == -1 && buildcfg.GOOS == "tamago" {
+		*FlagRound = 4096
+	}
 	if *FlagFuncAlign != 0 && !isPowerOfTwo(int64(*FlagFuncAlign)) {
 		Exitf("invalid -funcalign value %d", *FlagFuncAlign)
 	}
