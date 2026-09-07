@@ -57,11 +57,6 @@ TEXT runtime·rt0_arm_tamago(SB),NOSPLIT|NOFRAME,$0
 TEXT runtime·publicationBarrier(SB),NOSPLIT|NOFRAME,$0-0
 	B	runtime·armPublicationBarrier(SB)
 
-// func CallOnG0(func())
-TEXT runtime·CallOnG0(SB),NOSPLIT,$0
-	JMP	runtime·systemstack(SB)
-	RET
-
 TEXT runtime·findTimer(SB),NOSPLIT|NOFRAME,$0-0
 	CMP	$0, R0
 	B.EQ	fail
@@ -169,6 +164,11 @@ TEXT internal∕runtime∕goospkg·SignalReady(SB),NOSPLIT,$0-1
 	CALL	runtime·findTimer(SB)
 	EOR	$1, R1
 	MOVB	R1, ret+0(FP)
+	RET
+
+// func SystemStack(func())
+TEXT internal∕runtime∕goospkg·SystemStack(SB),NOSPLIT|NOFRAME,$0-4
+	JMP	runtime·systemstack(SB)
 	RET
 
 // never called (cgo not supported)
