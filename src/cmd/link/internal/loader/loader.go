@@ -2511,16 +2511,14 @@ var blockedLinknames = map[string][]string{
 	"testing.checkParallel":                 {"testing/cryptotest"}, // pushed from testing
 	"runtime.addmoduledata":                 {},                     // assembly symbol, disallow all packages
 	// Used by GOOS=tamago
-	"internal/runtime/goospkg.CPUInit":    {"runtime"},
-	"internal/runtime/goospkg.SendSignal": {""}, // used by external exception handlers
-	"runtime.CallOnG0":                    {""}, // used by external exception handlers
-	"runtime.rt0_amd64_tamago":            {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_arm64_tamago":            {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_arm_tamago":              {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_loong64_tamago":          {""}, // used by external goospkg.CPUInit overlay
-	"runtime.rt0_riscv64_tamago":          {""}, // used by external goospkg.CPUInit overlay
-	"runtime.findTimer":                   {"os/signal"},
-	"runtime.wakeG":                       {"os/signal"},
+	"internal/runtime/goospkg.CPUInit":     {"runtime"},
+	"internal/runtime/goospkg.SendSignal":  {""}, // used by external exception handlers
+	"internal/runtime/goospkg.SystemStack": {""}, // used by external exception handlers
+	"runtime.rt0_amd64_tamago":             {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_arm64_tamago":             {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_arm_tamago":               {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_loong64_tamago":           {""}, // used by external goospkg.CPUInit overlay
+	"runtime.rt0_riscv64_tamago":           {""}, // used by external goospkg.CPUInit overlay
 }
 
 // check if a linkname reference to symbol s from refpkg is allowed
