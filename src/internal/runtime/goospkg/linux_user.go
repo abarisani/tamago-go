@@ -82,6 +82,3 @@ func WriteConsole(c byte) {
 var Task = func(sp, mp, gp, fn unsafe.Pointer) {
 	clone(cloneFlags, sp, mp, gp, fn)
 }
-
-// provided by the runtime
-func SystemStack(fn func())
