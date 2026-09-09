@@ -118,6 +118,11 @@ func SystemStack(fn func()) {}
 
 // Optional variables/functions.
 var (
+	// TextAddr is an optional variable which can be set to initialize the
+	// start address of text symbols in a manner equivalent to 'go tool
+	// link -T' or 'go build -ldflags=-T'.
+	TextAddr uintptr
+
 	// Bloc is an optional variable which can be set to redefine the heap
 	// memory start address, this is typically only required on OS
 	// supported environments. When used it must be set with a static
