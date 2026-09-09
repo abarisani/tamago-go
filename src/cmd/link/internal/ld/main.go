@@ -320,6 +320,8 @@ func Main(arch *sys.Arch, theArch Arch) {
 		}
 	}
 
+	flagTextAddrSet := *FlagTextAddr != -1
+
 	bench.Start("libinit")
 	libinit(ctxt) // creates outfile
 	bench.Start("computeTLSOffset")
@@ -369,6 +371,11 @@ func Main(arch *sys.Arch, theArch Arch) {
 	}
 	bench.Start("loadlib")
 	ctxt.loadlib()
+
+	if buildcfg.GOOS == "tamago" && !flagTextAddrSet {
+		bench.Start("textaddrsym")
+		ctxt.setTextAddrFromSym()
+	}
 
 	bench.Start("inittasks")
 	ctxt.inittasks()
