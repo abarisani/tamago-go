@@ -104,6 +104,7 @@ func InitHW1() {}
 func SendSignal(s int) {}
 
 // SignalReady returns whether package [signal] is blocked waiting for an
+// incoming signal or it is handling one through [signal.Notify].
 //
 // Its implementation is linked from the Go runtime, rather than GOOSPKG, and
 // is provided to be called from interrupt handlers written in Go assembly.
