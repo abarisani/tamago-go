@@ -44,8 +44,9 @@ const (
 )
 
 var (
-	Bloc = uintptr(ramStart)
-	Exit = sys_exit_group
+	Bloc    = uintptr(ramStart)
+	BlocMax = uintptr(ramStart+ramSize)
+	Exit    = sys_exit_group
 
 	Idle   func(until int64)
 	ProcID func() uint64
