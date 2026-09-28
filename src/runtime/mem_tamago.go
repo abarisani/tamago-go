@@ -4,17 +4,24 @@
 
 package runtime
 
-import "unsafe"
+import (
+	goospkg "internal/runtime/goospkg"
+	"unsafe"
+)
 
 func sbrk(n uintptr) unsafe.Pointer {
 	// Plan 9 sbrk from /sys/src/libc/9sys/sbrk.c
 	bl := bloc
 	n = memRound(n)
 	if bl+n > blocMax {
-		// Stop at stack top address
-		if bl+n > uintptr(g0.stack.lo) {
+		switch {
+		case goospkg.BlocMax > 0:
+			if bl+n > goospkg.BlocMax {
+				return nil
+			}
+		case bl+n > uintptr(g0.stack.lo):
 			return nil
-		} else {
+		default:
 			memclrNoHeapPointers(unsafe.Pointer(bl), n)
 		}
 		blocMax = bl + n
