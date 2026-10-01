@@ -30,14 +30,6 @@ func nanotime1() int64 {
 	return goospkg.Nanotime()
 }
 
-// wakeG modifies a goroutine cached timer for time.Sleep (g.timer) to fire as
-// soon as possible.
-//
-// The function is meant to be invoked within Go assembly and its arguments
-// must be passed through registers rather than on the frame pointer, see
-// definition in sys_tamago_$GOARCH.s for details.
-func wakeG()
-
 // stubs for unused/unimplemented functionality
 type sigset struct{}
 type gsignalStack struct{}
