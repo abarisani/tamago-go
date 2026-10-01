@@ -2512,7 +2512,6 @@ var blockedLinknames = map[string][]string{
 	"runtime.addmoduledata":                 {},                     // assembly symbol, disallow all packages
 	// Used by GOOS=tamago
 	"internal/runtime/goospkg.CPUInit":     {"runtime"},
-	"internal/runtime/goospkg.SendSignal":  {""}, // used by external exception handlers
 	"internal/runtime/goospkg.SystemStack": {""}, // used by external exception handlers
 	"runtime.rt0_amd64_tamago":             {""}, // used by external goospkg.CPUInit overlay
 	"runtime.rt0_arm64_tamago":             {""}, // used by external goospkg.CPUInit overlay
