@@ -1,55 +1,117 @@
-// Copyright 2009 The Go Authors. All rights reserved.
+// Copyright 2026 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// This file implements runtime support for signal handling.
+//go:build tamago
+
+// Signal delivery for GOOS=tamago.
+//
+// Signals are raised through goospkg.Signal, which is suitable for invocation
+// from bare metal interrupt/exception handlers. Relay (see sigsend in
+// sys_tamago_$GOARCH.s) only sets the signal bit in sigPending with an atomic
+// operation, without allocation, locking or runtime use.
+//
+// The os/signal loop receives signals through signal_recv, which parks its
+// goroutine whenever no signal is pending. The scheduler (see sigReady)
+// makes it runnable again once a signal becomes pending.
+//
+// As signals are held in sigPending, a signal raised at any time, and in
+// particular while the receiver is not parked, is never lost.
 
 package runtime
 
 import (
-	"internal/runtime/math"
+	"internal/runtime/atomic"
+	"internal/runtime/sys"
 	"unsafe"
 )
 
+const numSig = 256
+
 var (
-	loopG uintptr
-	sig   int
+	// sigPending holds pending signals
+	sigPending [numSig / 32]uint32
+
+	// sigWaiter holds the *g parked in signal_recv
+	sigWaiter atomic.Uintptr
+
+	// sigRecv holds signals taken by signal_recv but not yet returned
+	sigRecv [numSig / 32]uint32
 )
 
-//go:linkname signal_loop_init os/signal.signal_loop_init
-func signal_loop_init() {
-	loopG = uintptr(unsafe.Pointer(getg()))
-}
+// goospkg.Signal sets the argument signal as pending, it is defined in
+// sys_tamago_$GOARCH.s and this declaration generates its ABI wrapper.
+//
+//go:linkname sigsend internal/runtime/goospkg.Signal
+//go:nosplit
+func sigsend(sig uint32)
 
-// Called to receive a signal.
-// Must only be called from a single goroutine at a time.
+// signal_recv returns the next pending signal, blocking until one is
+// available.
 //
 //go:linkname signal_recv os/signal.signal_recv
-func signal_recv() (s int) {
-	// Sleep indefinitely until woken up by
-	// internal∕runtime∕goospkg.SendSignal
-	timeSleep(math.MaxInt64)
+func signal_recv() uint32 {
+	for {
+		for i := range sigRecv {
+			if v := sigRecv[i]; v != 0 {
+				n := uint32(sys.TrailingZeros32(v))
+				sigRecv[i] &^= 1 << n
+				return uint32(i)*32 + n
+			}
+		}
 
-	s = sig
-	sig = -1
+		received := false
 
-	return
+		for i := range sigPending {
+			if v := atomic.Xchg(&sigPending[i], 0); v != 0 {
+				sigRecv[i] |= v
+				received = true
+			}
+		}
+
+		if !received {
+			gopark(sigParkCommit, nil, waitReasonIOWait, traceBlockGeneric, 1)
+		}
+	}
 }
 
-// sigsend delivers a signal to the os/signal package, it is implemented in
-// sys_tamago_$GOARCH.s, this declearation generates its ABI wrapper.
-//
-//go:linkname sigsend internal/runtime/goospkg.SendSignal
 //go:nosplit
-func sigsend(s int)
+func sigAnyPending() bool {
+	for i := range sigPending {
+		if atomic.Load(&sigPending[i]) != 0 {
+			return true
+		}
+	}
 
-// signal_waiting returns whether package os/signal is blocked waiting for an
-// incoming signal or it is handling one.
+	return false
+}
+
+func sigParkCommit(gp *g, _ unsafe.Pointer) bool {
+	p := uintptr(unsafe.Pointer(gp))
+	sigWaiter.Store(p)
+
+	if sigAnyPending() {
+		// A signal was raised while parking, abort unless sigReady
+		// already took gp (in which case it is being made runnable).
+		return !sigWaiter.CompareAndSwap(p, 0)
+	}
+
+	return true
+}
+
+// sigReady returns the parked signal receiver, in _Gwaiting state, if any
+// signal is pending, the caller must make it runnable.
 //
-//go:linkname signal_waiting internal/runtime/goospkg.SignalReady
 //go:nosplit
-func signal_waiting() bool
+func sigReady() *g {
+	if !sigAnyPending() {
+		return nil
+	}
 
+	return (*g)(unsafe.Pointer(sigWaiter.Swap(0)))
+}
+
+// signalWaitUntilIdle waits until the signal delivery mechanism is idle.
 // This is used to ensure that we do not drop a signal notification due
 // to a race between disabling a signal and receiving a signal.
 // This assumes that signal delivery has already been disabled for
@@ -59,7 +121,7 @@ func signal_waiting() bool
 //
 //go:linkname signalWaitUntilIdle os/signal.signalWaitUntilIdle
 func signalWaitUntilIdle() {
-	for !signal_waiting() {
+	for sigAnyPending() || sigWaiter.Load() == 0 {
 		Gosched()
 	}
 }

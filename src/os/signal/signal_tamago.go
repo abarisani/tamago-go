@@ -7,23 +7,19 @@ package signal
 import (
 	"os"
 	"syscall"
-	_ "unsafe"
 )
 
 // Defined by the runtime package.
-func signal_recv() int
-func signal_loop_init()
-
-func loop() {
-	signal_loop_init()
-
-	for {
-		process(syscall.Signal(signal_recv()))
-	}
-}
+func signal_recv() uint32
 
 func init() {
 	watchSignalLoop = loop
+}
+
+func loop() {
+	for {
+		process(syscall.Signal(signal_recv()))
+	}
 }
 
 const numSig = 256
