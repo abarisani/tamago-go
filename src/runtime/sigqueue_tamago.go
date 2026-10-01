@@ -7,7 +7,7 @@
 // Signal delivery for GOOS=tamago.
 //
 // Signals are raised through goospkg.Signal, which is suitable for invocation
-// from bare metal interrupt/exception handlers. Relay (see sigsend in
+// from bare metal interrupt/exception handlers. Signal (see sigsend in
 // sys_tamago_$GOARCH.s) only sets the signal bit in sigPending with an atomic
 // operation, without allocation, locking or runtime use.
 //
