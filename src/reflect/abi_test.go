@@ -25,7 +25,7 @@ func TestMethodValueCallABI(t *testing.T) {
 	// Enable register-based reflect.Call and ensure we don't
 	// use potentially incorrect cached versions by clearing
 	// the cache before we start and after we're done.
-	defer reflect.SetArgRegs(reflect.SetArgRegs(abi.IntArgRegs, abi.FloatArgRegs, abi.EffectiveFloatRegSize))
+	defer reflect.SetArgRegs(reflect.SetArgRegs(abi.IntArgRegs, abi.FloatArgRegs, uintptr(abi.EffectiveFloatRegSize)))
 
 	// This test is simple. Calling a method value involves
 	// pretty much just plumbing whatever arguments in whichever
@@ -157,7 +157,7 @@ func TestReflectCallABI(t *testing.T) {
 	// Enable register-based reflect.Call and ensure we don't
 	// use potentially incorrect cached versions by clearing
 	// the cache before we start and after we're done.
-	defer reflect.SetArgRegs(reflect.SetArgRegs(abi.IntArgRegs, abi.FloatArgRegs, abi.EffectiveFloatRegSize))
+	defer reflect.SetArgRegs(reflect.SetArgRegs(abi.IntArgRegs, abi.FloatArgRegs, uintptr(abi.EffectiveFloatRegSize)))
 
 	// Execute the functions defined below which all have the
 	// same form and perform the same function: pass all arguments
@@ -194,7 +194,7 @@ func TestReflectMakeFuncCallABI(t *testing.T) {
 	// Enable register-based reflect.MakeFunc and ensure we don't
 	// use potentially incorrect cached versions by clearing
 	// the cache before we start and after we're done.
-	defer reflect.SetArgRegs(reflect.SetArgRegs(abi.IntArgRegs, abi.FloatArgRegs, abi.EffectiveFloatRegSize))
+	defer reflect.SetArgRegs(reflect.SetArgRegs(abi.IntArgRegs, abi.FloatArgRegs, uintptr(abi.EffectiveFloatRegSize)))
 
 	// Execute the functions defined below which all have the
 	// same form and perform the same function: pass all arguments

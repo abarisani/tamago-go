@@ -135,6 +135,10 @@ func TestProfBuf(t *testing.T) {
 	})
 
 	t.Run("BlockingWriteRead", func(t *testing.T) {
+		if runtime.GOOS == "tamago" && runtime.GOMAXPROCS(0) == 1 {
+			t.Skip("not supported on single-core GOOS=tamago")
+		}
+
 		b := NewProfBuf(2, 11, 1)
 		wait := readBlock(t, b, []uint64{10, 1, 2, 3, 4, 5, 6, 7, 8, 9}, []unsafe.Pointer{unsafe.Pointer(&myTags[0])})
 		write(t, b, unsafe.Pointer(&myTags[0]), 1, []uint64{2, 3}, []uintptr{4, 5, 6, 7, 8, 9})
@@ -180,6 +184,10 @@ func TestProfBuf(t *testing.T) {
 }
 
 func TestProfBufDoubleWakeup(t *testing.T) {
+	if runtime.GOOS == "tamago" && runtime.GOMAXPROCS(0) == 1 {
+		t.Skip("not supported on single-core GOOS=tamago")
+	}
+
 	b := NewProfBuf(2, 16, 2)
 	go func() {
 		for range 1000 {
@@ -196,6 +204,10 @@ func TestProfBufDoubleWakeup(t *testing.T) {
 }
 
 func TestProfBufWakeup(t *testing.T) {
+	if runtime.GOOS == "tamago" && runtime.GOMAXPROCS(0) == 1 {
+		t.Skip("not supported on single-core GOOS=tamago")
+	}
+
 	b := NewProfBuf(2, 16, 2)
 	var wg sync.WaitGroup
 	wg.Go(func() {

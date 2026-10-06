@@ -31,6 +31,7 @@ var (
 	GOMIPS64  = gomips64()
 	GOPPC64   = goppc64()
 	GORISCV64 = goriscv64()
+	GOSOFT    = os.Getenv("GOSOFT")
 	GOWASM    = gowasm()
 	ToolTags  = toolTags()
 	GO_LDSO   = defaultGO_LDSO

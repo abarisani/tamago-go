@@ -380,6 +380,9 @@ func asmArgs(a *Action, p *load.Package) []any {
 	if cfg.Goarch == "riscv64" {
 		// Define GORISCV64_value from cfg.GORISCV64.
 		args = append(args, "-D", "GORISCV64_"+cfg.GORISCV64)
+		if buildcfg.GOSOFT == "1" {
+			args = append(args, "-D", "GOSOFT")
+		}
 	}
 
 	if cfg.Goarch == "arm" {
@@ -610,6 +613,9 @@ func (gcToolchain) ld(b *Builder, root *Action, targetPath, importcfg, mainpkg s
 	}
 	if fips140.Enabled() {
 		ldflags = append(ldflags, "-fipso", filepath.Join(root.Objdir, "fips.o"))
+	}
+	if buildcfg.GOSOFT == "1" {
+		ldflags = append(ldflags, "-X", "sync.soft=1", "-X", "runtime.soft=1", "-X", "math.soft=1")
 	}
 
 	// Store BuildID inside toolchain binaries as a unique identifier of the
