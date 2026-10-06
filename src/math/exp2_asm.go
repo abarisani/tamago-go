@@ -6,6 +6,6 @@
 
 package math
 
-const haveArchExp2 = true
+var haveArchExp2 = (soft != "1")
 
 func archExp2(x float64) float64

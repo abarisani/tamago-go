@@ -12,6 +12,6 @@ const (
 
 	// F8 - F23.
 	FloatArgRegs = 16
-
-	EffectiveFloatRegSize = 8
 )
+
+var EffectiveFloatRegSize = 8

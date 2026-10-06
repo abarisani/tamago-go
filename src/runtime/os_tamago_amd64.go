@@ -6,9 +6,7 @@
 
 package runtime
 
-import (
-	"internal/cpu"
-)
+import "internal/cpu"
 
 // defined in asm_amd64.s
 func cputicks() int64
