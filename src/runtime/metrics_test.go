@@ -792,6 +792,10 @@ func TestCPUMetricsSleep(t *testing.T) {
 // fn triggers a GC STW. If isOther is true, fn triggers an other STW. If both
 // are false, fn does not trigger any STW.
 func testSchedPauseMetrics(t *testing.T, fn func(t *testing.T), isGC, isOther bool) {
+	if runtime.GOOS == "tamago" && runtime.GOMAXPROCS(0) == 1 {
+		t.Skip("not supported on single-core GOOS=tamago")
+	}
+
 	m := []metrics.Sample{
 		{Name: "/sched/pauses/stopping/gc:seconds"},
 		{Name: "/sched/pauses/stopping/other:seconds"},

@@ -7,6 +7,7 @@ package riscv64
 import (
 	"cmd/compile/internal/ssagen"
 	"cmd/internal/obj/riscv"
+	"internal/buildcfg"
 )
 
 func Init(arch *ssagen.ArchInfo) {
@@ -14,6 +15,8 @@ func Init(arch *ssagen.ArchInfo) {
 
 	arch.REGSP = riscv.REG_SP
 	arch.MAXWIDTH = 1 << 50
+
+	arch.SoftFloat = (buildcfg.GOSOFT == "1")
 
 	arch.Ginsnop = ginsnop
 	arch.ZeroRange = zeroRange

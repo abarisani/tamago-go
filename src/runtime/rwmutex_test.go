@@ -61,6 +61,10 @@ func TestParallelRWMutexReaders(t *testing.T) {
 	// done too.
 	GC()
 
+	if GOOS == "tamago" && GOMAXPROCS(2) == 1 {
+		t.Skip("not supported on single-core GOOS=tamago")
+	}
+
 	doTestParallelReaders(1)
 	doTestParallelReaders(3)
 	doTestParallelReaders(4)

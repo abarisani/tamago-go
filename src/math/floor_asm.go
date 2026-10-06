@@ -6,14 +6,14 @@
 
 package math
 
-const haveArchFloor = true
+var haveArchFloor = (soft != "1")
 
 func archFloor(x float64) float64
 
-const haveArchCeil = true
+var haveArchCeil = (soft != "1")
 
 func archCeil(x float64) float64
 
-const haveArchTrunc = true
+var haveArchTrunc = (soft != "1")
 
 func archTrunc(x float64) float64

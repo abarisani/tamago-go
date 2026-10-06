@@ -6,5 +6,13 @@
 
 package runtime
 
+import "internal/abi"
+
+func init() {
+	if len(soft) > 0 {
+		abi.EffectiveFloatRegSize = 0
+	}
+}
+
 // defined in asm_riscv64.s
 func cputicks() int64

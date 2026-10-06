@@ -753,6 +753,24 @@ TEXT ·spillArgs(SB),NOSPLIT,$0-0
 	MOV	X21, (13*8)(X25)
 	MOV	X22, (14*8)(X25)
 	MOV	X23, (15*8)(X25)
+#ifdef GOSOFT
+	MOVF	F10, (16*8)(X25)
+	MOVF	F11, (17*8)(X25)
+	MOVF	F12, (18*8)(X25)
+	MOVF	F13, (19*8)(X25)
+	MOVF	F14, (20*8)(X25)
+	MOVF	F15, (21*8)(X25)
+	MOVF	F16, (22*8)(X25)
+	MOVF	F17, (23*8)(X25)
+	MOVF	F8,  (24*8)(X25)
+	MOVF	F9,  (25*8)(X25)
+	MOVF	F18, (26*8)(X25)
+	MOVF	F19, (27*8)(X25)
+	MOVF	F20, (28*8)(X25)
+	MOVF	F21, (29*8)(X25)
+	MOVF	F22, (30*8)(X25)
+	MOVF	F23, (31*8)(X25)
+#else
 	MOVD	F10, (16*8)(X25)
 	MOVD	F11, (17*8)(X25)
 	MOVD	F12, (18*8)(X25)
@@ -769,6 +787,7 @@ TEXT ·spillArgs(SB),NOSPLIT,$0-0
 	MOVD	F21, (29*8)(X25)
 	MOVD	F22, (30*8)(X25)
 	MOVD	F23, (31*8)(X25)
+#endif
 	RET
 
 // unspillArgs loads args into registers from a *internal/abi.RegArgs in X25.
@@ -789,6 +808,24 @@ TEXT ·unspillArgs(SB),NOSPLIT,$0-0
 	MOV	(13*8)(X25), X21
 	MOV	(14*8)(X25), X22
 	MOV	(15*8)(X25), X23
+#ifdef GOSOFT
+	MOVF	(16*8)(X25), F10
+	MOVF	(17*8)(X25), F11
+	MOVF	(18*8)(X25), F12
+	MOVF	(19*8)(X25), F13
+	MOVF	(20*8)(X25), F14
+	MOVF	(21*8)(X25), F15
+	MOVF	(22*8)(X25), F16
+	MOVF	(23*8)(X25), F17
+	MOVF	(24*8)(X25), F8
+	MOVF	(25*8)(X25), F9
+	MOVF	(26*8)(X25), F18
+	MOVF	(27*8)(X25), F19
+	MOVF	(28*8)(X25), F20
+	MOVF	(29*8)(X25), F21
+	MOVF	(30*8)(X25), F22
+	MOVF	(31*8)(X25), F23
+#else
 	MOVD	(16*8)(X25), F10
 	MOVD	(17*8)(X25), F11
 	MOVD	(18*8)(X25), F12
@@ -805,6 +842,7 @@ TEXT ·unspillArgs(SB),NOSPLIT,$0-0
 	MOVD	(29*8)(X25), F21
 	MOVD	(30*8)(X25), F22
 	MOVD	(31*8)(X25), F23
+#endif
 	RET
 
 // gcWriteBarrier informs the GC about heap pointer writes.

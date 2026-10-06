@@ -6,10 +6,10 @@
 
 package math
 
-const haveArchMax = true
+var haveArchMax = (soft != "1")
 
 func archMax(x, y float64) float64
 
-const haveArchMin = true
+var haveArchMin = (soft != "1")
 
 func archMin(x, y float64) float64

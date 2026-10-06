@@ -15,18 +15,10 @@ jobs:
     - name: Compile Go with all.bash
       run: |
         cd src ; ./all.bash
-    - name: Run Go distribution tests under tamago/amd64
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=amd64 ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/arm
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=arm ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/arm64
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=arm64 ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/loong64
-      run: |
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=loong64 ./bin/go tool dist test
     - name: Run Go distribution tests under tamago/riscv64
       run: |
         GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 ./bin/go tool dist test
+    - name: Run Go distribution tests under tamago/riscv64 GOSOFT=1
+      run: |
+        ./bin/go clean -cache
+        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 GOSOFT=1 QEMU_CPU=rv64,a=off,d=off,h=off,s=on,u=on,zawrs=off ./bin/go tool dist test

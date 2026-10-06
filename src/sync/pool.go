@@ -83,6 +83,9 @@ type poolLocal struct {
 //go:linkname runtime_randn runtime.randn
 func runtime_randn(n uint32) uint32
 
+// set at compile time when GOSOFT=1
+var soft string
+
 var poolRaceHash [128]uint64
 
 // poolRaceAddr returns an address to use as the synchronization point
