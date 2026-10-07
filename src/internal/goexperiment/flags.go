@@ -123,6 +123,9 @@ type Flags struct {
 	// of SIMD intrinsics.
 	SIMD bool
 
+	// SoftFloat enables soft floating point on riscv64 platforms.
+	SoftFloat bool
+
 	// RuntimeSecret enables the runtime/secret package.
 	RuntimeSecret bool
 

@@ -698,7 +698,7 @@ func initIntrinsics(cfg *intrinsicBuildConfig) {
 	alias("internal/runtime/atomic", "LoadAcq", "internal/runtime/atomic", "Load", lwatomics...)
 	alias("internal/runtime/atomic", "LoadAcq64", "internal/runtime/atomic", "Load64", lwatomics...)
 	alias("internal/runtime/atomic", "LoadAcquintptr", "internal/runtime/atomic", "LoadAcq", p4...)
-	if buildcfg.GOSOFT != "1" {
+	if !buildcfg.Experiment.SoftFloat {
 		alias("internal/runtime/atomic", "LoadAcquintptr", "internal/runtime/atomic", "LoadAcq64", p8...)
 	}
 
@@ -710,7 +710,7 @@ func initIntrinsics(cfg *intrinsicBuildConfig) {
 	alias("internal/runtime/atomic", "StoreRel", "internal/runtime/atomic", "Store", lwatomics...)
 	alias("internal/runtime/atomic", "StoreRel64", "internal/runtime/atomic", "Store64", lwatomics...)
 	alias("internal/runtime/atomic", "StoreReluintptr", "internal/runtime/atomic", "StoreRel", p4...)
-	if buildcfg.GOSOFT != "1" {
+	if !buildcfg.Experiment.SoftFloat {
 		alias("internal/runtime/atomic", "StoreReluintptr", "internal/runtime/atomic", "StoreRel64", p8...)
 	}
 

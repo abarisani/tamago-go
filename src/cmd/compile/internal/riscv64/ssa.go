@@ -631,10 +631,10 @@ func ssaGenValue(s *ssagen.State, v *ssa.Value) {
 
 	case ssa.OpRISCV64LoweredAtomicLoad32, ssa.OpRISCV64LoweredAtomicLoad64:
 		as := riscv.ALRW
-		if v.Op == ssa.OpRISCV64LoweredAtomicLoad64 && buildcfg.GOSOFT != "1" {
+		if v.Op == ssa.OpRISCV64LoweredAtomicLoad64 && !buildcfg.Experiment.SoftFloat {
 			as = riscv.ALRD
 		}
-		if buildcfg.GOSOFT == "1" {
+		if buildcfg.Experiment.SoftFloat {
 			as = riscv.ALW
 			if v.Op == ssa.OpRISCV64LoweredAtomicLoad64 {
 				as = riscv.ALD

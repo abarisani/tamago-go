@@ -6,6 +6,8 @@
 
 package math
 
-var haveArchExp = (soft != "1")
+import "internal/goexperiment"
+
+var haveArchExp = !goexperiment.SoftFloat
 
 func archExp(x float64) float64
