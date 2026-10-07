@@ -6,10 +6,13 @@
 
 package runtime
 
-import "internal/abi"
+import (
+	"internal/abi"
+	"internal/goexperiment"
+)
 
 func init() {
-	if len(soft) > 0 {
+	if goexperiment.SoftFloat {
 		abi.EffectiveFloatRegSize = 0
 	}
 }

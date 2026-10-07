@@ -6,14 +6,16 @@
 
 package math
 
-var haveArchFloor = (soft != "1")
+import "internal/goexperiment"
+
+var haveArchFloor = !goexperiment.SoftFloat
 
 func archFloor(x float64) float64
 
-var haveArchCeil = (soft != "1")
+var haveArchCeil = !goexperiment.SoftFloat
 
 func archCeil(x float64) float64
 
-var haveArchTrunc = (soft != "1")
+var haveArchTrunc = !goexperiment.SoftFloat
 
 func archTrunc(x float64) float64

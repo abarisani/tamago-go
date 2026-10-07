@@ -4283,7 +4283,7 @@ func (s *state) minMax(n *ir.CallExpr) *ssa.Value {
 				// FIXME: add check once GOS390X exists
 			}
 
-			if hasIntrinsic && buildcfg.GOSOFT != "1" {
+			if hasIntrinsic && !buildcfg.Experiment.SoftFloat {
 				var op ssa.Op
 				switch {
 				case typ.Kind() == types.TFLOAT64 && n.Op() == ir.OMIN:

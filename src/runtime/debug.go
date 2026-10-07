@@ -5,12 +5,10 @@
 package runtime
 
 import (
+	"internal/goexperiment"
 	"internal/runtime/atomic"
 	"unsafe"
 )
-
-// set at compile time when GOSOFT=1
-var soft string
 
 // GOMAXPROCS sets the maximum number of CPUs that can be executing
 // simultaneously and returns the previous setting. If n < 1, it does not change
@@ -75,7 +73,7 @@ func GOMAXPROCS(n int) int {
 		n = 1 // WebAssembly has no threads yet, so only one CPU is possible.
 	}
 
-	if len(soft) > 0 {
+	if goexperiment.SoftFloat {
 		n = 1
 	}
 
