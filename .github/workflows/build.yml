@@ -18,7 +18,6 @@ jobs:
     - name: Run Go distribution tests under tamago/riscv64
       run: |
         GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 ./bin/go tool dist test
-    - name: Run Go distribution tests under tamago/riscv64 GOSOFT=1
+    - name: Run Go distribution tests under tamago/riscv64 GOEXPERIMENT=softfloat
       run: |
-        ./bin/go clean -cache
-        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 GOSOFT=1 QEMU_CPU=rv64,a=off,d=off,h=off,s=on,u=on,zawrs=off ./bin/go tool dist test
+        GO_BUILDER_NAME=tamago GOOS=tamago GOARCH=riscv64 GOEXPERIMENT=softfloat QEMU_CPU=rv64,a=off,d=off,h=off,s=on,u=on,zawrs=off ./bin/go tool dist test

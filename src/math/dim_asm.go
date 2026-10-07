@@ -6,10 +6,12 @@
 
 package math
 
-var haveArchMax = (soft != "1")
+import "internal/goexperiment"
+
+var haveArchMax = !goexperiment.SoftFloat
 
 func archMax(x, y float64) float64
 
-var haveArchMin = (soft != "1")
+var haveArchMin = !goexperiment.SoftFloat
 
 func archMin(x, y float64) float64
