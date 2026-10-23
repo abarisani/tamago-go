@@ -62,7 +62,7 @@ var (
 func CPUInit()
 func sys_exit_group(code int32)
 func sys_write(c *byte)
-func sys_clock_gettime() (ns int64)
+func sys_clock_gettime(monotonic bool) (ns int64)
 func sys_getrandom(b []byte, n int)
 
 //go:noescape
