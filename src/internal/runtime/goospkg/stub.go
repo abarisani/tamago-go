@@ -77,12 +77,13 @@ func InitRNG() {}
 // GetRandomData generates len(b) random bytes and writes them into b.
 func GetRandomData(b []byte) {}
 
-// Nanotime returns the system time in nanoseconds.
+// Nanotime returns, in nanoseconds, monotonic time when monotonic is true,
+// otherwise wall-clock time since the Unix epoch.
 //
 // Before [InitHW1] it must be defined using Go's Assembler to retain Go's
 // commitment to backward compatibility, otherwise extreme care must be taken
 // as the lack of World start does not allow memory allocation.
-func Nanotime() int64 { return 0 }
+func Nanotime(monotonic bool) int64 { return 0 }
 
 // WriteConsole handles character printing to standard console.  Runtime output
 // to standard output and standard error is written through this function one

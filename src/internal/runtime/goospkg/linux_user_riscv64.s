@@ -15,7 +15,8 @@
 #define SYS_mmap		222
 #define SYS_getrandom		278
 
-#define CLOCK_REALTIME 0
+#define CLOCK_REALTIME	0
+#define CLOCK_MONOTONIC	1
 
 TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 	MOV	$(const_ramStart), A0
@@ -36,9 +37,10 @@ TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 
 	JMP	runtime·rt0_riscv64_tamago(SB)
 
-// func sys_clock_gettime() int64
-TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-8
-	MOV	$CLOCK_REALTIME, A0
+// func sys_clock_gettime(monotonic bool) int64
+TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-16
+	// monotonic (bool) maps directly to CLOCK_REALTIME or CLOCK_MONOTONIC
+	MOVBU	monotonic+0(FP), A0
 	MOV	$8(X2), A1
 	MOV	$SYS_clock_gettime, A7
 	ECALL
@@ -47,7 +49,7 @@ TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-8
 	MOV	$1000000000, T2
 	MUL	T2, T0
 	ADD	T1, T0
-	MOV	T0, ns+0(FP)
+	MOV	T0, ns+8(FP)
 	RET
 
 // func sys_exit_group(code int32)

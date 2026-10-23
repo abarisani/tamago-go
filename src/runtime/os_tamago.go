@@ -27,7 +27,7 @@ func hwinit1() {
 }
 
 func nanotime1() int64 {
-	return goospkg.Nanotime()
+	return goospkg.Nanotime(true)
 }
 
 // stubs for unused/unimplemented functionality
@@ -145,7 +145,7 @@ func syscall_now() (sec int64, nsec int32) {
 
 //go:nosplit
 func walltime() (sec int64, nsec int32) {
-	nano := nanotime()
+	nano := goospkg.Nanotime(false)
 	sec = nano / 1000000000
 	nsec = int32(nano % 1000000000)
 	return

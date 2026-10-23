@@ -18,7 +18,8 @@
 #define SYS_clock_gettime	(SYS_BASE + 263)
 #define SYS_getrandom		(SYS_BASE + 384)
 
-#define CLOCK_REALTIME 0
+#define CLOCK_REALTIME	0
+#define CLOCK_MONOTONIC	1
 
 TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 	MOVW	$(const_ramStart), R0
@@ -39,11 +40,11 @@ TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 
 	B	runtime·rt0_arm_tamago(SB)
 
-// func sys_clock_gettime() int64
-TEXT ·sys_clock_gettime(SB),NOSPLIT,$12-8
-	MOVW	$CLOCK_REALTIME, R0
+// func sys_clock_gettime(monotonic bool) int64
+TEXT ·sys_clock_gettime(SB),NOSPLIT,$12-12
+	// monotonic (bool) maps directly to CLOCK_REALTIME or CLOCK_MONOTONIC
+	MOVBU	monotonic+0(FP), R0
 	MOVW	$spec-12(SP), R1	// timespec
-
 	MOVW	$SYS_clock_gettime, R7
 	SWI	$0
 
@@ -55,8 +56,8 @@ TEXT ·sys_clock_gettime(SB),NOSPLIT,$12-8
 	ADD.S	R2, R0
 	ADC	$0, R1	// Add carry bit to upper half.
 
-	MOVW	R0, ns_lo+0(FP)
-	MOVW	R1, ns_hi+4(FP)
+	MOVW	R0, ns_lo+4(FP)
+	MOVW	R1, ns_hi+8(FP)
 
 	RET
 

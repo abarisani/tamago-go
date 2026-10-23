@@ -15,7 +15,8 @@
 #define SYS_mmap		222
 #define SYS_getrandom		278
 
-#define CLOCK_REALTIME 0
+#define CLOCK_REALTIME	0
+#define CLOCK_MONOTONIC	1
 
 TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 	MOVD	$(const_ramStart), R0
@@ -37,8 +38,11 @@ TEXT ·CPUInit(SB),NOSPLIT|NOFRAME,$0
 
 	B	runtime·rt0_arm64_tamago(SB)
 
-// func sys_clock_gettime() int64
-TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-8
+// func sys_clock_gettime(monotonic bool) int64
+TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-16
+	// monotonic (bool) maps directly to CLOCK_REALTIME or CLOCK_MONOTONIC
+	MOVBU	monotonic+0(FP), R0
+
 	MOVD	RSP, R20
 	MOVD	RSP, R1
 
@@ -46,7 +50,6 @@ TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-8
 	BIC	$15, R1	// Align for C code
 	MOVD	R1, RSP
 
-	MOVW	$CLOCK_REALTIME, R0
 	MOVD	$SYS_clock_gettime, R8
 	SVC
 
@@ -60,7 +63,7 @@ TEXT ·sys_clock_gettime(SB),NOSPLIT,$40-8
 	MOVD	$1000000000, R4
 	MUL	R4, R3
 	ADD	R5, R3
-	MOVD	R3, ns+0(FP)
+	MOVD	R3, ns+8(FP)
 	RET
 
 // func sys_exit_group(code int32)
